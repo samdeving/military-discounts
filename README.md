@@ -116,14 +116,15 @@ The plugin supports using a `.env` file for securely storing sensitive configura
 
 ## Support
 
-For support, please contact the plugin author or visit the [plugin support page](https://example.com).
+For support, please contact the plugin author or visit the https://github.com/samdeving/military-discounts.
 
 ## License
 
-This plugin is licensed under the GPL v2 or later. See the [LICENSE](LICENSE) file for details.
+This plugin is licensed under the GPL v3. See the [LICENSE](LICENSE) file for details.
 
 ## Changelog
 
-### 1.0.0
+### 1.0.0-beta
 
 - Initial release.
+
