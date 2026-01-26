@@ -60,6 +60,7 @@ class MD_Military_OTP {
 		// Try to use WooCommerce email if available.
 		if ( function_exists( 'WC' ) && WC()->mailer() ) {
 			$emails = WC()->mailer()->get_emails();
+			
 			if ( isset( $emails['MD_Email_OTP'] ) ) {
 				$emails['MD_Email_OTP']->trigger( $user_id, $otp, $email );
 				return true;
@@ -97,7 +98,8 @@ If you did not request this code, please ignore this email.
 
 		$headers = array( 'Content-Type: text/plain; charset=UTF-8' );
 
-		return wp_mail( $email, $subject, $message, $headers );
+		$sent = wp_mail( $email, $subject, $message, $headers );
+		return $sent;
 	}
 
 	/**

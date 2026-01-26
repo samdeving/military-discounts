@@ -369,7 +369,7 @@ class MD_Ajax {
 
 		// Generate and send OTP.
 		$otp = $this->military_otp->generate_otp( $user_id );
-		$sent = $this->military_otp->send_otp( $email, $otp );
+		$sent = $this->military_otp->send_otp( $email, $otp, $user_id );
 
 		if ( $sent ) {
 			// Store email for verification.

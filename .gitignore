@@ -1,0 +1,7 @@
+# Ignore all files ending in .log
+*.log
+
+# Ignore a specific file named debug.log in the root directory
+/debug.log
+
+/.kilocode
