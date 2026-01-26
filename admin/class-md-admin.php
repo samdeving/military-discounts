@@ -86,6 +86,15 @@ class MD_Admin {
 					'errorClearing'    => __( 'Error clearing logs.', 'military-discounts' ),
 					'testingApi'       => __( 'Testing API connection...', 'military-discounts' ),
 					'saving'           => __( 'Saving...', 'military-discounts' ),
+					'confirmCancelVerification' => __( 'Are you sure you want to cancel this pending verification?', 'military-discounts' ),
+					'confirmCancelAllVerifications' => __( 'Are you sure you want to cancel all pending verifications?', 'military-discounts' ),
+					'cancelling'       => __( 'Cancelling...', 'military-discounts' ),
+					'cancellingAll'    => __( 'Cancelling all...', 'military-discounts' ),
+					'errorCancelling'  => __( 'Error cancelling verification.', 'military-discounts' ),
+					'errorCancellingAll' => __( 'Error cancelling all verifications.', 'military-discounts' ),
+					'cancel'           => __( 'Cancel', 'military-discounts' ),
+					'cancelAll'        => __( 'Cancel All Pending Verifications', 'military-discounts' ),
+					'noPendingVerifications' => __( 'No pending verifications.', 'military-discounts' ),
 				),
 			)
 		);
@@ -241,7 +250,13 @@ class MD_Admin {
 			echo '<p>' . esc_html__( 'No pending verifications.', 'military-discounts' ) . '</p>';
 		} else {
 			?>
-			<table class="widefat striped">
+			<div class="md-queue-actions">
+				<button type="button" class="button button-secondary" id="md-cancel-all-pending">
+					<?php esc_html_e( 'Cancel All Pending Verifications', 'military-discounts' ); ?>
+				</button>
+			</div>
+			<br>
+			<table class="widefat striped md-pending-verifications">
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'User', 'military-discounts' ); ?></th>
@@ -249,6 +264,7 @@ class MD_Admin {
 						<th><?php esc_html_e( 'Created', 'military-discounts' ); ?></th>
 						<th><?php esc_html_e( 'Retries', 'military-discounts' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'military-discounts' ); ?></th>
+						<th><?php esc_html_e( 'Actions', 'military-discounts' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -262,6 +278,11 @@ class MD_Admin {
 							<td><?php echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $item['queue_item']['created_at'] ) ); ?></td>
 							<td><?php echo esc_html( $item['queue_item']['retries'] ); ?></td>
 							<td><?php echo esc_html( ucfirst( $item['queue_item']['status'] ) ); ?></td>
+							<td>
+								<button type="button" class="button button-secondary md-cancel-verification" data-user-id="<?php echo esc_attr( $user_id ); ?>">
+									<?php esc_html_e( 'Cancel', 'military-discounts' ); ?>
+								</button>
+							</td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>

@@ -40,6 +40,8 @@ class MD_Settings {
 		add_action( 'wp_ajax_md_test_api', array( $this, 'ajax_test_api' ) );
 		add_action( 'wp_ajax_md_clear_logs', array( $this, 'ajax_clear_logs' ) );
 		add_action( 'wp_ajax_md_export_logs', array( $this, 'ajax_export_logs' ) );
+		add_action( 'wp_ajax_md_cancel_pending_verification', array( $this, 'ajax_cancel_pending_verification' ) );
+		add_action( 'wp_ajax_md_cancel_all_pending_verifications', array( $this, 'ajax_cancel_all_pending_verifications' ) );
 	}
 
 	/**
@@ -664,5 +666,52 @@ class MD_Settings {
 
 		$logs = $this->logger->export_logs();
 		wp_send_json_success( array( 'logs' => $logs ) );
+	}
+
+	/**
+	 * Cancel a pending verification.
+	 */
+	public function ajax_cancel_pending_verification() {
+		check_ajax_referer( 'md_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( __( 'Unauthorized.', 'military-discounts' ) );
+		}
+
+		$user_id = isset( $_POST['user_id'] ) ? absint( $_POST['user_id'] ) : 0;
+
+		if ( empty( $user_id ) ) {
+			wp_send_json_error( __( 'Invalid user ID.', 'military-discounts' ) );
+		}
+
+		$encryption = new MD_Encryption();
+		$queue = new MD_Queue( $encryption );
+
+		if ( $queue->cancel_pending_verification( $user_id ) ) {
+			wp_send_json_success( __( 'Verification cancelled successfully.', 'military-discounts' ) );
+		} else {
+			wp_send_json_error( __( 'Failed to cancel verification.', 'military-discounts' ) );
+		}
+	}
+
+	/**
+	 * Cancel all pending verifications.
+	 */
+	public function ajax_cancel_all_pending_verifications() {
+		check_ajax_referer( 'md_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( __( 'Unauthorized.', 'military-discounts' ) );
+		}
+
+		$encryption = new MD_Encryption();
+		$queue = new MD_Queue( $encryption );
+
+		$cancelled_count = $queue->cancel_all_pending_verifications();
+
+		wp_send_json_success( array(
+			'message' => sprintf( __( 'Cancelled %d pending verifications.', 'military-discounts' ), $cancelled_count ),
+			'count' => $cancelled_count
+		) );
 	}
 }

@@ -215,4 +215,82 @@
         });
     });
 
+    // Cancel pending verification
+    $(document).on('click', '.md-cancel-verification', function() {
+        var button = $(this);
+        var user_id = button.data('user-id');
+        var row = button.closest('tr');
+
+        if (!confirm(mdAdmin.strings.confirmCancelVerification)) {
+            return;
+        }
+
+        button.prop('disabled', true).text(mdAdmin.strings.cancelling);
+
+        $.ajax({
+            url: mdAdmin.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'md_cancel_pending_verification',
+                nonce: mdAdmin.nonce,
+                user_id: user_id
+            },
+            success: function(response) {
+                if (response.success) {
+                    row.fadeOut(200, function() {
+                        $(this).remove();
+
+                        // Check if table is now empty
+                        var table = $('table.md-pending-verifications');
+                        if (table.find('tbody tr').length === 0) {
+                            table.find('tbody').html('<tr><td colspan="6">' + mdAdmin.strings.noPendingVerifications + '</td></tr>');
+                        }
+                    });
+                } else {
+                    alert(response.data);
+                }
+            },
+            error: function() {
+                alert(mdAdmin.strings.errorCancelling);
+            },
+            complete: function() {
+                button.prop('disabled', false).text(mdAdmin.strings.cancel);
+            }
+        });
+    });
+
+    // Cancel all pending verifications
+    $(document).on('click', '#md-cancel-all-pending', function() {
+        var button = $(this);
+
+        if (!confirm(mdAdmin.strings.confirmCancelAllVerifications)) {
+            return;
+        }
+
+        button.prop('disabled', true).text(mdAdmin.strings.cancellingAll);
+
+        $.ajax({
+            url: mdAdmin.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'md_cancel_all_pending_verifications',
+                nonce: mdAdmin.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.data.message);
+                    $('table.md-pending-verifications tbody').html('<tr><td colspan="6">' + mdAdmin.strings.noPendingVerifications + '</td></tr>');
+                } else {
+                    alert(response.data);
+                }
+            },
+            error: function() {
+                alert(mdAdmin.strings.errorCancellingAll);
+            },
+            complete: function() {
+                button.prop('disabled', false).text(mdAdmin.strings.cancelAll);
+            }
+        });
+    });
+
 })(jQuery);

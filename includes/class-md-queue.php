@@ -235,4 +235,32 @@ class MD_Queue {
 
 		return time() >= $next_retry;
 	}
+
+	/**
+	 * Cancel a pending verification.
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool True on success.
+	 */
+	public function cancel_pending_verification( $user_id ) {
+		return $this->remove_from_queue( $user_id );
+	}
+
+	/**
+	 * Cancel all pending verifications.
+	 *
+	 * @return int Number of cancelled verifications.
+	 */
+	public function cancel_all_pending_verifications() {
+		$pending_users = $this->get_all_pending();
+		$cancelled_count = 0;
+
+		foreach ( $pending_users as $user_id ) {
+			if ( $this->remove_from_queue( $user_id ) ) {
+				$cancelled_count++;
+			}
+		}
+
+		return $cancelled_count;
+	}
 }
