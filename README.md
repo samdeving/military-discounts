@@ -9,12 +9,12 @@
 
 This plugin is in beta, and should not be used in production at this time. Use at your own risk.
 
-This is a WordPress WooCommerce plugin that verifies customers who are currently in the US military or a veteran. Veteran verification is done via the V.A. LightHouse API, or current military by sending a one-time passcode to their official email address. Once verified, you may automatically issue customers a coupon through WooCommerce.
+This is a WordPress WooCommerce plugin that verifies customers who are currently serving in the US military or are veterans. Veteran verification is done via the **U.S. Department of Veterans Affairs (VA) Lighthouse API**, and active-duty military verification is performed by sending a one-time passcode (OTP) to their official military email address. Once verified, you can automatically issue customers a discount coupon through WooCommerce.
 
 ## Features
 
-- **VA API Integration:** Verify veteran status using the VA API.
-- **Military Email OTP:** Verify military status using OTP sent to military email addresses.
+- **VA Lighthouse API Integration:** Verify veteran status using the official U.S. Department of Veterans Affairs Lighthouse API.
+- **Military Email OTP:** Verify active-duty military status using OTP sent to official military email addresses.
 - **Coupon Validation:** Restrict WooCommerce coupons to verified veterans and military personnel.
 - **Reverification:** Automatically reverify status at configurable intervals.
 - **Logging:** Track verification attempts and outcomes for auditing.
@@ -49,16 +49,74 @@ After activation, configure the plugin settings:
 1. Navigate to **WooCommerce > Settings > Military Discounts**.
 2. Configure the following settings:
    - **General Settings:** Enable/disable the plugin, set reverification intervals, and configure encryption.
-   - **VA API Settings:** Enter your VA API key and configure sandbox mode.
+   - **VA Lighthouse API Settings:** Enter your VA Lighthouse API key and configure sandbox mode.
    - **Military OTP Settings:** Configure email patterns for military email verification and OTP expiry.
    - **Queue Settings:** Configure retry intervals and maximum retries for failed verifications.
    - **Logs Settings:** Set log retention days.
 
 3. Save your settings.
 
+## VA Lighthouse API Setup
+
+To use the VA Lighthouse API for veteran verification, you'll need to obtain API credentials. The VA provides both sandbox (testing) and production (live) environments.
+
+### What is the VA Lighthouse API?
+
+The **VA Lighthouse API** is a modern, RESTful API provided by the U.S. Department of Veterans Affairs that allows developers to access VA services programmatically. The Veteran Confirmation API endpoint is used by this plugin to verify veteran status.
+
+### Obtaining a Sandbox API Key (for testing)
+
+1. **Create a VA Lighthouse Developer Account:**
+   - Visit the [VA Lighthouse Developer Portal](https://developer.va.gov/)
+   - Click "Sign In" or "Create Account" to register
+   - Complete the registration process and verify your email
+
+2. **Register Your Application:**
+   - After logging in, navigate to "My Applications"
+   - Click "Create New Application"
+   - Provide a name for your application (e.g., "Military Discounts Plugin")
+   - Select "VA Lighthouse API" as the API you want to use
+   - Choose "Sandbox" environment for testing purposes
+   - Complete the application registration
+
+3. **Get Your Sandbox API Key:**
+   - Once your application is registered, you'll be given a sandbox API key
+   - Copy this key for use in the plugin settings
+
+### Obtaining a Production API Key (for live use)
+
+1. **Complete Sandbox Testing:**
+   - Ensure your application works correctly with the sandbox API
+   - Test various verification scenarios to ensure reliability
+
+2. **Request Production Access:**
+   - In the VA Lighthouse Developer Portal, navigate to your application
+   - Click "Request Production Access"
+   - Provide information about your use case, including:
+     - How you'll use the API
+     - Estimated API usage volume
+     - Security measures you've implemented
+   - Complete the production access request form
+
+3. **Await Approval:**
+   - Production access requests are reviewed by the VA
+   - Approval times can vary (typically a few business days to a week)
+   - You'll receive an email notification when your request is approved
+
+4. **Get Your Production API Key:**
+   - Once approved, you'll receive a production API key
+   - Replace your sandbox key with the production key in the plugin settings
+
+### API Key Security Best Practices
+
+- Always store your API keys securely using the `.env` file (never commit them to version control)
+- Restrict API key access to only the necessary IP addresses
+- Monitor API usage regularly for unusual activity
+- Rotate your API keys periodically
+
 ### Setting Up the .env File
 
-The plugin supports using a `.env` file for securely storing sensitive configuration, such as the encryption key. This is optional but recommended for enhanced security.
+The plugin supports using a `.env` file for securely storing sensitive configuration, such as the encryption key and API credentials. This is optional but recommended for enhanced security.
 
 #### Steps to Set Up the .env File:
 
@@ -71,8 +129,8 @@ The plugin supports using a `.env` file for securely storing sensitive configura
    - Update the `MD_ENCRYPTION_KEY` value with a secure, randomly generated key (e.g., a 64-character hexadecimal string).
    - Example: `MD_ENCRYPTION_KEY="your-encryption-key-here"`
 
-3. **Configure Additional Settings (Optional):**
-   - Update the VA API settings (`MD_VA_API_KEY`, `MD_VA_API_URL`, `MD_VA_API_SANDBOX`) if you are using the VA API integration.
+3. **Configure VA Lighthouse API Settings (Optional):**
+   - Update the VA Lighthouse API settings (`MD_VA_API_KEY`, `MD_VA_API_URL`, `MD_VA_API_SANDBOX`) if you are using the VA API integration.
    - Configure military OTP settings (`MD_MILITARY_OTP_WHITELIST_PATTERNS`, `MD_MILITARY_OTP_BLACKLIST_PATTERNS`, `MD_MILITARY_OTP_EXPIRY`) as needed.
    - Adjust logging and queue settings (`MD_LOG_RETENTION_DAYS`, `MD_QUEUE_RETRY_INTERVAL`, `MD_QUEUE_MAX_RETRIES`) if necessary.
 
