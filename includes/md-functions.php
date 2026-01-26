@@ -179,7 +179,7 @@ function md_get_va_api_settings() {
 	$defaults = array(
 		'enabled'     => true,
 		'api_key'     => '',
-		'api_url'     => 'https://api.va.gov/services/veteran-confirmation/v1',
+		'api_url'     => '', // Empty by default to let get_api_url() handle it
 		'sandbox'     => true,
 	);
 

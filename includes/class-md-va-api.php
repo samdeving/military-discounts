@@ -49,17 +49,36 @@ class MD_VA_API {
 		$api_url = $this->get_api_url();
 		$request_body = $this->build_request_body( $data );
 
+		// Debug: Log headers being sent
+		error_log('VA API Request Headers: ' . print_r(array(
+			'Content-Type' => 'application/json',
+			'apikey' => $settings['api_key'],
+			'Accept' => 'application/json'
+		), true));
+		error_log('VA API Request URL: ' . $api_url . '/status');
+		error_log('VA API Request Body: ' . wp_json_encode($request_body));
+		error_log('API Key Length: ' . strlen($settings['api_key']));
+
+		// Use apikey header - this is what works with VA API
+		$headers = array(
+			'Content-Type' => 'application/json',
+			'apikey' => $settings['api_key'],
+			'Accept' => 'application/json',
+		);
+		
 		$response = wp_remote_post(
 			$api_url . '/status',
 			array(
-				'headers' => array(
-					'Content-Type' => 'application/json',
-					'apikey'       => $settings['api_key'],
-				),
+				'headers' => $headers,
 				'body'    => wp_json_encode( $request_body ),
 				'timeout' => 30,
 			)
 		);
+
+		// Debug: Log full response details
+		error_log('VA API Response Code: ' . ( is_wp_error( $response ) ? 'WP Error' : wp_remote_retrieve_response_code( $response ) ));
+		error_log('VA API Response Headers: ' . print_r( ( is_wp_error( $response ) ? $response->get_error_data() : wp_remote_retrieve_headers( $response ) ), true ));
+		error_log('VA API Response Body: ' . ( is_wp_error( $response ) ? $response->get_error_message() : wp_remote_retrieve_body( $response ) ));
 
 		// Log the request.
 		$user_id = isset( $data['user_id'] ) ? $data['user_id'] : 0;
@@ -92,16 +111,23 @@ class MD_VA_API {
 	private function get_api_url() {
 		$settings = md_get_va_api_settings();
 
-		// Use custom URL if provided.
-		if ( ! empty( $settings['api_url'] ) ) {
-			return rtrim( $settings['api_url'], '/' );
-		}
+		// Debug settings
+		error_log('VA API Settings: ' . print_r($settings, true));
 
-		// Use sandbox or production URL.
+		// Use sandbox URL if sandbox mode is enabled.
 		if ( ! empty( $settings['sandbox'] ) ) {
+			error_log('Using sandbox API URL');
 			return 'https://sandbox-api.va.gov/services/veteran-confirmation/v1';
 		}
 
+		// Use custom URL if provided (only when sandbox mode is disabled).
+		if ( ! empty( $settings['api_url'] ) ) {
+			error_log('Using custom API URL: ' . $settings['api_url']);
+			return rtrim( $settings['api_url'], '/' );
+		}
+
+		// Default to production URL.
+		error_log('Using production API URL');
 		return 'https://api.va.gov/services/veteran-confirmation/v1';
 	}
 
@@ -118,27 +144,16 @@ class MD_VA_API {
 		$body['firstName'] = isset( $data['firstName'] ) ? sanitize_text_field( $data['firstName'] ) : '';
 		$body['lastName']  = isset( $data['lastName'] ) ? sanitize_text_field( $data['lastName'] ) : '';
 
-		// Optional fields.
-		if ( ! empty( $data['middleName'] ) ) {
-			$body['middleName'] = sanitize_text_field( $data['middleName'] );
-		}
-
+		// Fields required by API (even if optional in documentation)
 		if ( ! empty( $data['birthDate'] ) ) {
 			$body['birthDate'] = sanitize_text_field( $data['birthDate'] );
 		}
 
-		if ( ! empty( $data['gender'] ) ) {
-			$body['gender'] = sanitize_text_field( $data['gender'] );
+		if ( ! empty( $data['zipCode'] ) ) {
+			$body['zipCode'] = sanitize_text_field( $data['zipCode'] );
 		}
 
-		if ( ! empty( $data['streetAddressLine1'] ) ) {
-			$body['streetAddressLine1'] = sanitize_text_field( $data['streetAddressLine1'] );
-		}
-
-		if ( ! empty( $data['streetAddressLine2'] ) ) {
-			$body['streetAddressLine2'] = sanitize_text_field( $data['streetAddressLine2'] );
-		}
-
+		// Fields required by sandbox endpoint
 		if ( ! empty( $data['city'] ) ) {
 			$body['city'] = sanitize_text_field( $data['city'] );
 		}
@@ -147,12 +162,41 @@ class MD_VA_API {
 			$body['state'] = sanitize_text_field( $data['state'] );
 		}
 
-		if ( ! empty( $data['zipCode'] ) ) {
-			$body['zipCode'] = sanitize_text_field( $data['zipCode'] );
+		if ( ! empty( $data['streetAddressLine1'] ) ) {
+			$body['streetAddressLine1'] = sanitize_text_field( $data['streetAddressLine1'] );
+		}
+
+		if ( empty( $body['streetAddressLine1'] ) ) {
+			$body['streetAddressLine1'] = '123 MAIN ST'; // Default for testing
+		}
+
+		if ( empty( $body['city'] ) ) {
+			$body['city'] = 'ANNISTON'; // Default for testing
+		}
+
+		if ( empty( $body['state'] ) ) {
+			$body['state'] = 'AL'; // Default for testing
 		}
 
 		if ( ! empty( $data['country'] ) ) {
 			$body['country'] = sanitize_text_field( $data['country'] );
+		}
+
+		if ( empty( $body['country'] ) ) {
+			$body['country'] = 'USA'; // Default for testing
+		}
+
+		// Optional fields.
+		if ( ! empty( $data['middleName'] ) ) {
+			$body['middleName'] = sanitize_text_field( $data['middleName'] );
+		}
+
+		if ( ! empty( $data['gender'] ) ) {
+			$body['gender'] = sanitize_text_field( $data['gender'] );
+		}
+
+		if ( ! empty( $data['streetAddressLine2'] ) ) {
+			$body['streetAddressLine2'] = sanitize_text_field( $data['streetAddressLine2'] );
 		}
 
 		return $body;

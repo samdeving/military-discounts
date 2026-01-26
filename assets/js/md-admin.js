@@ -27,6 +27,25 @@
     
     $(document).ready(function() {
         initSortable();
+        
+        // Handle sandbox mode checkbox change
+        var sandboxCheckbox = $('input[name="md_settings_va_api[sandbox]"]');
+        var apiUrlField = $('input[name="md_settings_va_api[api_url]"]');
+        var originalApiUrl = apiUrlField.val();
+        
+        // Update API URL when sandbox mode is toggled
+        sandboxCheckbox.on('change', function() {
+            if ($(this).is(':checked')) {
+                apiUrlField.val('https://sandbox-api.va.gov/services/veteran-confirmation/v1');
+            } else {
+                apiUrlField.val(originalApiUrl);
+            }
+        });
+        
+        // Initialize API URL based on current sandbox mode state
+        if (sandboxCheckbox.is(':checked')) {
+            apiUrlField.val('https://sandbox-api.va.gov/services/veteran-confirmation/v1');
+        }
     });
 
     // Add field

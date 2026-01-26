@@ -5,3 +5,10 @@
 /debug.log
 
 /.kilocode
+
+test-auth-methods.php
+test-va-api-auth.php
+test-va-api-fixed.php
+test-va-api-full.php
+test-va-api-sandbox.php
+test-va-api-settings.php
