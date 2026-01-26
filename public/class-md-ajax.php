@@ -277,9 +277,16 @@ class MD_Ajax {
 				// Verification successful.
 				md_set_verified( $user_id, 'veteran', true );
 
+				// Get redirect settings from settings
+				$settings = get_option( 'md_settings_general', array() );
+				$redirect_url = isset( $settings['redirect_url'] ) ? $settings['redirect_url'] : '';
+				$redirect_delay = isset( $settings['redirect_delay'] ) ? max( 0, absint( $settings['redirect_delay'] ) ) : 2000;
+
 				wp_send_json_success( array(
-					'status'  => 'approved',
-					'message' => __( 'Your veteran status has been verified! You can now use veteran discounts.', 'military-discounts' ),
+					'status'        => 'approved',
+					'message'       => __( 'Your veteran status has been verified! You can now use veteran discounts.', 'military-discounts' ),
+					'redirect_url'  => $redirect_url,
+					'redirect_delay' => $redirect_delay,
 				) );
 			} elseif ( 'not_confirmed' === $result['status'] ) {
 				$reason = isset( $result['reason'] ) ? $result['reason'] : '';
@@ -409,9 +416,16 @@ class MD_Ajax {
 			// Clean up transients.
 			delete_transient( 'md_otp_email_' . $user_id );
 
+			// Get redirect settings from settings
+			$settings = get_option( 'md_settings_general', array() );
+			$redirect_url = isset( $settings['redirect_url'] ) ? $settings['redirect_url'] : '';
+			$redirect_delay = isset( $settings['redirect_delay'] ) ? max( 0, absint( $settings['redirect_delay'] ) ) : 2000;
+
 			wp_send_json_success( array(
-				'status'  => 'approved',
-				'message' => __( 'Your active military status has been verified! You can now use military discounts.', 'military-discounts' ),
+				'status'        => 'approved',
+				'message'       => __( 'Your active military status has been verified! You can now use military discounts.', 'military-discounts' ),
+				'redirect_url'  => $redirect_url,
+				'redirect_delay' => $redirect_delay,
 			) );
 		} else {
 			wp_send_json_error( __( 'Invalid or expired verification code. Please try again.', 'military-discounts' ) );

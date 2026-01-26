@@ -163,6 +163,8 @@ function md_get_general_settings() {
 		'reverification_interval'    => 365,
 		'reverification_behavior'    => 'silent',
 		'disable_encryption'         => false,
+		'redirect_url'               => '',
+		'redirect_delay'             => 2000,
 	);
 
 	return wp_parse_args( get_option( 'md_settings_general', array() ), $defaults );

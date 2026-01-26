@@ -133,6 +133,37 @@ class MD_Settings {
 				'default'     => false,
 			)
 		);
+
+		add_settings_field(
+			'redirect_url',
+			__( 'Success Redirect URL', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-general',
+			'md_general_section',
+			array(
+				'option'      => 'md_settings_general',
+				'field'       => 'redirect_url',
+				'description' => __( 'URL to redirect users to after successful verification. Leave empty to refresh the current page.', 'military-discounts' ),
+				'placeholder' => __( 'https://example.com/success', 'military-discounts' ),
+				'default'     => '',
+			)
+		);
+
+		add_settings_field(
+			'redirect_delay',
+			__( 'Redirect Delay (ms)', 'military-discounts' ),
+			array( $this, 'render_number_field' ),
+			'md-settings-general',
+			'md_general_section',
+			array(
+				'option'      => 'md_settings_general',
+				'field'       => 'redirect_delay',
+				'description' => __( 'Time in milliseconds to wait before redirecting after successful verification. Default is 2000ms (2 seconds).', 'military-discounts' ),
+				'default'     => 2000,
+				'min'         => 0,
+				'max'         => 10000,
+			)
+		);
 	}
 
 	/**
@@ -545,6 +576,8 @@ class MD_Settings {
 		$sanitized['reverification_interval'] = isset( $input['reverification_interval'] ) ? absint( $input['reverification_interval'] ) : 365;
 		$sanitized['reverification_behavior'] = isset( $input['reverification_behavior'] ) ? sanitize_key( $input['reverification_behavior'] ) : 'silent';
 		$sanitized['disable_encryption']      = ! empty( $input['disable_encryption'] );
+		$sanitized['redirect_url']            = isset( $input['redirect_url'] ) ? esc_url_raw( $input['redirect_url'] ) : '';
+		$sanitized['redirect_delay']          = isset( $input['redirect_delay'] ) ? max( 0, absint( $input['redirect_delay'] ) ) : 2000;
 
 		return $sanitized;
 	}

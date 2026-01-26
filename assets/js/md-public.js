@@ -263,7 +263,9 @@
             },
             success: function (response) {
                 if (response.success) {
-                    showSuccessAndReload(response.data.message);
+                    var redirectUrl = response.data.redirect_url || '';
+                    var redirectDelay = response.data.redirect_delay || 2000;
+                    showSuccessAndReload(response.data.message, redirectUrl, redirectDelay);
                 } else {
                     showMessage('error', response.data);
                     $btn.prop('disabled', false).text(mdPublic.strings.verifyCode);
@@ -294,7 +296,9 @@
             success: function (response) {
                 if (response.success) {
                     if (response.data.status === 'approved') {
-                        showSuccessAndReload(response.data.message);
+                        var redirectUrl = response.data.redirect_url || '';
+                        var redirectDelay = response.data.redirect_delay || 2000;
+                        showSuccessAndReload(response.data.message, redirectUrl, redirectDelay);
                     } else if (response.data.status === 'queued') {
                         showSuccessAndReload(response.data.message);
                     }
@@ -344,17 +348,29 @@
         $('#md-messages').hide();
     }
 
-    function showSuccessAndReload(message) {
+    function showSuccessAndReload(message, redirectUrl, redirectDelay) {
         var html = '<div class="md-status md-status-verified">';
         html += '<div class="md-status-icon"><span class="dashicons dashicons-yes-alt"></span></div>';
         html += '<div class="md-status-content"><h3>' + message + '</h3>';
-        html += '<p>Refreshing page...</p></div></div>';
+        
+        if (redirectUrl) {
+            html += '<p>Redirecting...</p></div></div>';
+        } else {
+            html += '<p>Refreshing page...</p></div></div>';
+        }
 
         $('.md-form-wrapper').html(html);
 
+        // Use provided delay or default to 2000ms
+        var delay = redirectDelay > 0 ? redirectDelay : 2000;
+
         setTimeout(function () {
-            location.reload();
-        }, 2000);
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            } else {
+                location.reload();
+            }
+        }, delay);
     }
 
     function escapeHtml(text) {

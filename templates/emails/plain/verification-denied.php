@@ -9,10 +9,11 @@ defined( 'ABSPATH' ) || exit;
 
 echo "= " . esc_html( $email_heading ) . " =\n\n";
 
+$customer_name = $user ? esc_html( $user->display_name ) : esc_html__( 'Customer', 'military-discounts' );
 printf(
 	/* translators: %s: customer name */
 	esc_html__( 'Hi %s,', 'military-discounts' ),
-	esc_html( $user->display_name )
+	$customer_name
 );
 echo "\n\n";
 

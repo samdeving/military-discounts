@@ -15,10 +15,11 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 
 <p>
 	<?php
+	$customer_name = $user ? esc_html( $user->display_name ) : esc_html__( 'Customer', 'military-discounts' );
 	printf(
 		/* translators: %s: customer name */
 		esc_html__( 'Hi %s,', 'military-discounts' ),
-		esc_html( $user->display_name )
+		$customer_name
 	);
 	?>
 </p>
