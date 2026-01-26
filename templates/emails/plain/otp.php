@@ -7,10 +7,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
-echo esc_html( wp_strip_all_tags( $email_heading ) );
-echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
-
 $customer_name = $user ? esc_html( $user->display_name ) : esc_html__( 'Customer', 'military-discounts' );
 printf(
 	/* translators: %s: customer name */
@@ -37,5 +33,4 @@ if ( $additional_content ) {
 	echo "\n\n";
 }
 
-echo "\n----------------------------------------\n\n";
 echo wp_kses_post( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) );
