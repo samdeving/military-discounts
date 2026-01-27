@@ -51,20 +51,70 @@ class MD_My_Account {
 	 * @return array Modified items.
 	 */
 	public function add_menu_item( $items ) {
-		// Insert before logout.
-		$logout = false;
-		if ( isset( $items['customer-logout'] ) ) {
-			$logout = $items['customer-logout'];
-			unset( $items['customer-logout'] );
+		$settings = md_get_general_settings();
+		$page_title = ! empty( $settings['page_title'] ) ? $settings['page_title'] : __( 'Military Discounts', 'military-discounts' );
+		$menu_order = isset( $settings['menu_order'] ) ? $settings['menu_order'] : 10;
+
+		// Our menu item to add
+		$our_item = array( 'military-discounts' => $page_title );
+		
+		// If menu order is 0 or 1, add at the beginning
+		if ( $menu_order <= 1 ) {
+			return array_merge( $our_item, $items );
 		}
 
-		$items['military-discounts'] = __( 'Military Discounts', 'military-discounts' );
+		// Get the default order of WooCommerce menu items
+		$default_order = array(
+			'dashboard',
+			'orders',
+			'downloads',
+			'edit-address',
+			'payment-methods',
+			'edit-account',
+			'customer-logout'
+		);
 
-		if ( $logout ) {
-			$items['customer-logout'] = $logout;
+		// Create a weight map based on default order
+		$item_weights = array();
+		foreach ( $default_order as $index => $key ) {
+			$item_weights[ $key ] = $index + 1; // 1-based index
 		}
 
-		return $items;
+		// Handle any custom menu items added by other plugins
+		$custom_item_weight = 7; // After customer-logout by default
+		foreach ( $items as $key => $value ) {
+			if ( ! isset( $item_weights[ $key ] ) ) {
+				$item_weights[ $key ] = $custom_item_weight++;
+			}
+		}
+
+		// Build the new menu
+		$new_items = array();
+		$inserted = false;
+
+		foreach ( $items as $key => $value ) {
+			// If we haven't inserted our item yet and the current item's weight is >= our menu order
+			if ( ! $inserted && $item_weights[ $key ] >= $menu_order ) {
+				$new_items = array_merge( $new_items, $our_item );
+				$inserted = true;
+			}
+			$new_items[ $key ] = $value;
+		}
+
+		// If we didn't insert it yet, add it at the end
+		if ( ! $inserted ) {
+			// If there's a logout item, add before it
+			if ( isset( $new_items['customer-logout'] ) ) {
+				$logout = $new_items['customer-logout'];
+				unset( $new_items['customer-logout'] );
+				$new_items = array_merge( $new_items, $our_item );
+				$new_items['customer-logout'] = $logout;
+			} else {
+				$new_items = array_merge( $new_items, $our_item );
+			}
+		}
+
+		return $new_items;
 	}
 
 	/**
@@ -89,7 +139,10 @@ class MD_My_Account {
 
 		?>
 		<div class="md-verification-container">
-			<h2><?php esc_html_e( 'Military Discounts', 'military-discounts' ); ?></h2>
+			<h2><?php 
+				$settings = md_get_general_settings();
+				echo esc_html( ! empty( $settings['page_title'] ) ? $settings['page_title'] : __( 'Military Discounts', 'military-discounts' ) ); 
+			?></h2>
 			<p><?php esc_html_e( 'Verify your veteran or active military status to access exclusive discounts.', 'military-discounts' ); ?></p>
 
 			<?php if ( $status['is_veteran'] || $status['is_military'] ) : ?>

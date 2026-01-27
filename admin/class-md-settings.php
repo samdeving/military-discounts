@@ -166,6 +166,37 @@ class MD_Settings {
 				'max'         => 10000,
 			)
 		);
+
+		add_settings_field(
+			'page_title',
+			__( 'Page Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-general',
+			'md_general_section',
+			array(
+				'option'      => 'md_settings_general',
+				'field'       => 'page_title',
+				'description' => __( 'Custom title for the Military Discounts page in My Account. Leave empty to use default.', 'military-discounts' ),
+				'placeholder' => __( 'Military Discounts', 'military-discounts' ),
+				'default'     => '',
+			)
+		);
+
+		add_settings_field(
+			'menu_order',
+			__( 'Menu Order', 'military-discounts' ),
+			array( $this, 'render_number_field' ),
+			'md-settings-general',
+			'md_general_section',
+			array(
+				'option'      => 'md_settings_general',
+				'field'       => 'menu_order',
+				'description' => __( 'Order of the Military Discounts link in My Account menu. Lower numbers appear first. Default is 10.', 'military-discounts' ),
+				'default'     => 10,
+				'min'         => 0,
+				'max'         => 100,
+			)
+		);
 	}
 
 	/**
@@ -580,6 +611,8 @@ class MD_Settings {
 		$sanitized['disable_encryption']      = ! empty( $input['disable_encryption'] );
 		$sanitized['redirect_url']            = isset( $input['redirect_url'] ) ? esc_url_raw( $input['redirect_url'] ) : '';
 		$sanitized['redirect_delay']          = isset( $input['redirect_delay'] ) ? max( 0, absint( $input['redirect_delay'] ) ) : 2000;
+		$sanitized['page_title']              = isset( $input['page_title'] ) ? sanitize_text_field( $input['page_title'] ) : '';
+		$sanitized['menu_order']              = isset( $input['menu_order'] ) ? min( 100, max( 0, absint( $input['menu_order'] ) ) ) : 10;
 
 		return $sanitized;
 	}

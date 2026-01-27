@@ -125,6 +125,8 @@ function md_activate() {
 		'reverification_interval'    => 365,
 		'reverification_behavior'    => 'silent',
 		'disable_encryption'         => false,
+		'page_title'                 => '',
+		'menu_order'                 => 10,
 	);
 
 	$default_va_api = array(

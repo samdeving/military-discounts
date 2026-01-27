@@ -165,6 +165,8 @@ function md_get_general_settings() {
 		'disable_encryption'         => false,
 		'redirect_url'               => '',
 		'redirect_delay'             => 2000,
+		'page_title'                 => '',
+		'menu_order'                 => 10,
 	);
 
 	return wp_parse_args( get_option( 'md_settings_general', array() ), $defaults );
