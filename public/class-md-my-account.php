@@ -312,7 +312,7 @@ class MD_My_Account {
 				</div>
 
 				<div class="md-form-actions">
-					<button type="button" class="button button-primary md-next-step" disabled>
+					<button type="button" class="button button-primary wp-element-button md-next-step" disabled>
 						<?php esc_html_e( 'Next', 'military-discounts' ); ?>
 					</button>
 				</div>
@@ -327,10 +327,10 @@ class MD_My_Account {
 				</div>
 
 				<div class="md-form-actions">
-					<button type="button" class="button md-prev-step">
+					<button type="button" class="button wp-element-button md-prev-step">
 						<?php esc_html_e( 'Back', 'military-discounts' ); ?>
 					</button>
-					<button type="button" class="button button-primary md-next-step">
+					<button type="button" class="button button-primary wp-element-button md-next-step">
 						<?php esc_html_e( 'Next', 'military-discounts' ); ?>
 					</button>
 				</div>

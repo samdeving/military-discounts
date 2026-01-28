@@ -121,6 +121,7 @@ class MD_Ajax {
 						<input type="date"
 							id="md-<?php echo esc_attr( $field['id'] ); ?>"
 							name="<?php echo esc_attr( $field['id'] ); ?>"
+							class="input-text"
 							<?php echo $is_required ? 'required' : ''; ?>
 							max="<?php echo esc_attr( gmdate( 'Y-m-d' ) ); ?>">
 						<?php
@@ -138,6 +139,7 @@ class MD_Ajax {
 						?>
 						<select id="md-<?php echo esc_attr( $field['id'] ); ?>"
 							name="<?php echo esc_attr( $field['id'] ); ?>"
+							class="input-select"
 							<?php echo $is_required ? 'required' : ''; ?>>
 							<option value=""><?php esc_html_e( 'Select...', 'military-discounts' ); ?></option>
 							<?php if ( ! empty( $field['options'] ) ) : ?>
@@ -154,6 +156,7 @@ class MD_Ajax {
 						<input type="email"
 							id="md-<?php echo esc_attr( $field['id'] ); ?>"
 							name="<?php echo esc_attr( $field['id'] ); ?>"
+							class="input-text"
 							placeholder="<?php echo esc_attr( isset( $field['placeholder'] ) ? $field['placeholder'] : '' ); ?>"
 							<?php echo $is_required ? 'required' : ''; ?>>
 						<?php
@@ -164,6 +167,7 @@ class MD_Ajax {
 						<input type="text"
 							id="md-<?php echo esc_attr( $field['id'] ); ?>"
 							name="<?php echo esc_attr( $field['id'] ); ?>"
+							class="input-text"
 							placeholder="<?php echo esc_attr( isset( $field['placeholder'] ) ? $field['placeholder'] : '' ); ?>"
 							<?php echo $is_required ? 'required' : ''; ?>>
 						<?php
@@ -186,6 +190,7 @@ class MD_Ajax {
 		?>
 		<select id="md-<?php echo esc_attr( $field['id'] ); ?>"
 			name="<?php echo esc_attr( $field['id'] ); ?>"
+			class="input-select"
 			<?php echo $is_required ? 'required' : ''; ?>>
 			<option value=""><?php esc_html_e( 'Select State...', 'military-discounts' ); ?></option>
 			<?php foreach ( $states as $code => $name ) : ?>
@@ -206,6 +211,7 @@ class MD_Ajax {
 		?>
 		<select id="md-<?php echo esc_attr( $field['id'] ); ?>"
 			name="<?php echo esc_attr( $field['id'] ); ?>"
+			class="input-select"
 			<?php echo $is_required ? 'required' : ''; ?>>
 			<option value=""><?php esc_html_e( 'Select Country...', 'military-discounts' ); ?></option>
 			<option value="USA" selected><?php esc_html_e( 'United States', 'military-discounts' ); ?></option>

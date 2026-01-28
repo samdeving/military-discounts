@@ -310,12 +310,6 @@
     border-top: 1px solid #eee;
 }
 
-.md-form-actions .button {
-    min-width: 120px;
-    padding: 10px 25px;
-    font-size: 14px;
-}
-
 /* OTP section */
 .md-otp-section {
     text-align: center;
