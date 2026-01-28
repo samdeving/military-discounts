@@ -68,6 +68,32 @@ class MD_Ajax {
 		add_action( 'wp_ajax_md_send_military_otp', array( $this, 'ajax_send_military_otp' ) );
 		add_action( 'wp_ajax_md_verify_military_otp', array( $this, 'ajax_verify_military_otp' ) );
 		add_action( 'wp_ajax_md_check_billing_name', array( $this, 'ajax_check_billing_name' ) );
+		add_action( 'wp_ajax_md_validate_military_email', array( $this, 'ajax_validate_military_email' ) );
+		add_action( 'wp_ajax_md_check_email_name_match', array( $this, 'ajax_check_email_name_match' ) );
+	}
+
+	/**
+	 * Validate military email.
+	 */
+	public function ajax_validate_military_email() {
+		check_ajax_referer( 'md_public_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( __( 'Please log in to continue.', 'military-discounts' ) );
+		}
+
+		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+
+		if ( empty( $email ) || ! is_email( $email ) ) {
+			wp_send_json_error( __( 'Please enter a valid email address.', 'military-discounts' ) );
+		}
+
+		// Check if it's a valid military email.
+		if ( ! $this->military_otp->is_military_email( $email ) ) {
+			wp_send_json_error( __( 'This email address is not recognized as a valid military email. Please use your official .mil email address.', 'military-discounts' ) );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -87,6 +113,48 @@ class MD_Ajax {
 
 		if ( empty( $first_name ) || empty( $last_name ) ) {
 			wp_send_json_error( __( 'Please update your billing first and last name in your account before verifying.', 'military-discounts' ) );
+		}
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Check if email username matches billing name.
+	 */
+	public function ajax_check_email_name_match() {
+		check_ajax_referer( 'md_public_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( __( 'Please log in to continue.', 'military-discounts' ) );
+		}
+
+		$user_id = get_current_user_id();
+		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+
+		if ( empty( $email ) || ! is_email( $email ) ) {
+			wp_send_json_error( __( 'Please enter a valid email address.', 'military-discounts' ) );
+		}
+
+		// Check name matching if required.
+		if ( $this->military_otp->is_name_match_required() ) {
+			$customer   = new WC_Customer( $user_id );
+			$first_name = $customer->get_billing_first_name();
+			$last_name  = $customer->get_billing_last_name();
+
+			if ( empty( $first_name ) || empty( $last_name ) ) {
+				wp_send_json_error( __( 'Please update your billing first and last name in your account before verifying.', 'military-discounts' ) );
+			}
+
+			if ( ! $this->military_otp->email_matches_name( $email, $first_name, $last_name ) ) {
+				wp_send_json_error(
+					sprintf(
+						/* translators: 1: first name, 2: last name */
+						__( 'The email username does not match your billing name (%1$s %2$s). The email local part must contain your first and last name (e.g., firstname.lastname@mail.mil).', 'military-discounts' ),
+						esc_html( $first_name ),
+						esc_html( $last_name )
+					)
+				);
+			}
 		}
 
 		wp_send_json_success();

@@ -127,9 +127,34 @@
             }
         });
 
-        // Check billing name for military verification before proceeding to step 3
+        // Check military email validity
         if (valid && verificationType === 'military') {
-            // We need to make an AJAX call to check billing name
+            var email = $('#md-militaryEmail').val().trim();
+            $.ajax({
+                url: mdPublic.ajaxUrl,
+                type: 'POST',
+                async: false, // Make synchronous call to block form submission
+                data: {
+                    action: 'md_validate_military_email',
+                    nonce: mdPublic.nonce,
+                    email: email
+                },
+                success: function (response) {
+                    if (!response.success) {
+                        valid = false;
+                        showMessage('error', response.data);
+                    }
+                },
+                error: function () {
+                    valid = false;
+                    showMessage('error', mdPublic.strings.errorOccurred);
+                }
+            });
+        }
+
+        // Check billing name and email-to-name match for military verification before proceeding to step 3
+        if (valid && verificationType === 'military') {
+            // Check billing name
             $.ajax({
                 url: mdPublic.ajaxUrl,
                 type: 'POST',
@@ -149,6 +174,31 @@
                     showMessage('error', mdPublic.strings.errorOccurred);
                 }
             });
+
+            // Check email-to-name match if billing name is valid
+            if (valid) {
+                var email = $('#md-militaryEmail').val().trim();
+                $.ajax({
+                    url: mdPublic.ajaxUrl,
+                    type: 'POST',
+                    async: false, // Make synchronous call to block form submission
+                    data: {
+                        action: 'md_check_email_name_match',
+                        nonce: mdPublic.nonce,
+                        email: email
+                    },
+                    success: function (response) {
+                        if (!response.success) {
+                            valid = false;
+                            showMessage('error', response.data);
+                        }
+                    },
+                    error: function () {
+                        valid = false;
+                        showMessage('error', mdPublic.strings.errorOccurred);
+                    }
+                });
+            }
         }
 
         return valid;
