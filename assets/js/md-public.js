@@ -279,6 +279,7 @@
         e.preventDefault();
 
         var $btn = $(this);
+        var isResend = $btn.hasClass('md-resend-otp');
         $btn.prop('disabled', true);
 
         if ($btn.is('button')) {
@@ -298,6 +299,14 @@
                     $('.md-otp-send').hide();
                     $('.md-otp-verify').show();
                     $('.md-otp-input').focus();
+                    hideMessage(); // Hide any existing messages
+                    
+                    // Update the OTP sent message based on whether it's a resend
+                    if (isResend) {
+                        $('.md-otp-sent-message').text(mdPublic.strings.otpResent);
+                    } else {
+                        $('.md-otp-sent-message').text(mdPublic.strings.otpSent);
+                    }
 
                 } else {
                     showMessage('error', response.data);

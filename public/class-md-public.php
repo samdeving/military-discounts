@@ -131,6 +131,7 @@ class MD_Public {
 					'requiredField'   => __( 'This field is required.', 'military-discounts' ),
 					'invalidEmail'    => __( 'Please enter a valid email address.', 'military-discounts' ),
 					'otpSent'         => __( 'Verification code sent to your email.', 'military-discounts' ),
+					'otpResent'       => __( "We've sent another code to your email.", 'military-discounts' ),
 					'selectType'      => __( 'Please select a verification type.', 'military-discounts' ),
 					'back'            => __( 'Back', 'military-discounts' ),
 					'next'            => __( 'Next', 'military-discounts' ),
