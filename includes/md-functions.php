@@ -199,12 +199,20 @@ function md_get_military_otp_settings() {
 		'whitelist_patterns'      => '*.mil',
 		'blacklist_patterns'      => '*ctr.mil,*civ.mil',
 		'otp_expiry'              => 15,
-		'require_name_match'      => false,
+		'require_name_match'      => 'none', // Deprecated, use name_match_type instead
+		'name_match_type'         => 'none', // New setting name
 		'lock_billing_first_name' => false,
 		'lock_billing_last_name'  => false,
 	);
 
-	return wp_parse_args( get_option( 'md_settings_military_otp', array() ), $defaults );
+	$settings = wp_parse_args( get_option( 'md_settings_military_otp', array() ), $defaults );
+
+	// Fallback to old setting if new one isn't set
+	if ( ! isset( $settings['name_match_type'] ) || empty( $settings['name_match_type'] ) ) {
+		$settings['name_match_type'] = $settings['require_name_match'];
+	}
+
+	return $settings;
 }
 
 /**

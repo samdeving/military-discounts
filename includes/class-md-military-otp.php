@@ -239,7 +239,7 @@ If you did not request this code, please ignore this email.
 	}
 
 	/**
-		* Check if email username matches customer's first and last name.
+		* Check if email username matches customer's first and/or last name.
 		*
 		* @param string $email      Email address to check.
 		* @param string $first_name Customer's first name.
@@ -247,6 +247,13 @@ If you did not request this code, please ignore this email.
 		* @return bool True if names match.
 		*/
 	public function email_matches_name( $email, $first_name, $last_name ) {
+		$settings = md_get_military_otp_settings();
+		$match_type = isset( $settings['name_match_type'] ) ? $settings['name_match_type'] : $settings['require_name_match']; // Fallback to old setting name
+
+		if ( 'none' === $match_type ) {
+			return true;
+		}
+
 		// Extract local part (before @).
 		$parts = explode( '@', $email );
 		if ( count( $parts ) < 2 ) {
@@ -257,7 +264,11 @@ If you did not request this code, please ignore this email.
 		$first_name = strtolower( trim( $first_name ) );
 		$last_name  = strtolower( trim( $last_name ) );
 
-		if ( empty( $first_name ) || empty( $last_name ) ) {
+		if ( 'both' === $match_type && ( empty( $first_name ) || empty( $last_name ) ) ) {
+			return false;
+		}
+
+		if ( 'first' === $match_type && empty( $first_name ) ) {
 			return false;
 		}
 
@@ -268,29 +279,35 @@ If you did not request this code, please ignore this email.
 		$local_parts = preg_split( '/[._\-]+/', $local_no_numbers );
 		$local_parts = array_filter( $local_parts );
 
-		// Check if first name and last name are both present in the local parts.
 		$has_first = false;
 		$has_last  = false;
 
+		// Check for exact matches or partial matches (e.g., "john" matches "johnson")
 		foreach ( $local_parts as $part ) {
-			if ( $part === $first_name ) {
+			if ( strpos( $part, $first_name ) !== false || strpos( $first_name, $part ) !== false ) {
 				$has_first = true;
 			}
-			if ( $part === $last_name ) {
+			if ( strpos( $part, $last_name ) !== false || strpos( $last_name, $part ) !== false ) {
 				$has_last = true;
 			}
 		}
 
-		return $has_first && $has_last;
+		if ( 'both' === $match_type ) {
+			return $has_first && $has_last;
+		} elseif ( 'first' === $match_type ) {
+			return $has_first;
+		}
+
+		return false; // Fallback to false if invalid match type.
 	}
 
 	/**
 		* Check if name matching is required.
 		*
-		* @return bool True if name matching is enabled.
+		* @return string Match type: 'both', 'first', or 'none'.
 		*/
 	public function is_name_match_required() {
 		$settings = md_get_military_otp_settings();
-		return ! empty( $settings['require_name_match'] );
+		return isset( $settings['name_match_type'] ) ? $settings['name_match_type'] : $settings['require_name_match']; // Fallback to old setting name
 	}
 }

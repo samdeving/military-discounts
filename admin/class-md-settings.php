@@ -352,17 +352,21 @@ class MD_Settings {
 		);
 
 		add_settings_field(
-			'require_name_match',
+			'name_match_type',
 			__( 'Require Name Match', 'military-discounts' ),
-			array( $this, 'render_checkbox_field' ),
+			array( $this, 'render_select_field' ),
 			'md-settings-military-otp',
 			'md_military_otp_section',
 			array(
 				'option'      => 'md_settings_military_otp',
-				'field'       => 'require_name_match',
-				'label'       => __( 'Require email username to match customer first/last name', 'military-discounts' ),
-				'description' => __( 'The email local part (e.g., john.smith@) must contain the customer\'s first and last name. Allows for middle names and numbers (e.g., john.jones.smith2@).', 'military-discounts' ),
-				'default'     => false,
+				'field'       => 'name_match_type',
+				'options'     => array(
+					'both'   => __( 'Both - Email must contain first and last name', 'military-discounts' ),
+					'first'  => __( 'First - Email must contain first name', 'military-discounts' ),
+					'none'   => __( 'None - No name matching required', 'military-discounts' ),
+				),
+				'description' => __( 'The email local part (e.g., john.smith@) must contain the specified name(s). Allows for middle names and numbers (e.g., john.jones.smith2@).', 'military-discounts' ),
+				'default'     => 'none',
 			)
 		);
 
@@ -635,7 +639,11 @@ class MD_Settings {
 		$sanitized['whitelist_patterns']      = isset( $input['whitelist_patterns'] ) ? sanitize_textarea_field( $input['whitelist_patterns'] ) : '*.mil';
 		$sanitized['blacklist_patterns']      = isset( $input['blacklist_patterns'] ) ? sanitize_textarea_field( $input['blacklist_patterns'] ) : '';
 		$sanitized['otp_expiry']              = isset( $input['otp_expiry'] ) ? absint( $input['otp_expiry'] ) : 15;
-		$sanitized['require_name_match']      = ! empty( $input['require_name_match'] );
+		$valid_options = array( 'both', 'first', 'none' );
+		// Sanitize new setting
+		$sanitized['name_match_type']         = isset( $input['name_match_type'] ) && in_array( $input['name_match_type'], $valid_options, true ) ? $input['name_match_type'] : 'none';
+		// Maintain backward compatibility with old setting
+		$sanitized['require_name_match']      = $sanitized['name_match_type'];
 		$sanitized['lock_billing_first_name'] = ! empty( $input['lock_billing_first_name'] );
 		$sanitized['lock_billing_last_name']  = ! empty( $input['lock_billing_last_name'] );
 

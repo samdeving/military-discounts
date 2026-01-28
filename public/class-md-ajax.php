@@ -136,7 +136,7 @@ class MD_Ajax {
 		}
 
 		// Check name matching if required.
-		if ( $this->military_otp->is_name_match_required() ) {
+		if ( 'none' !== $this->military_otp->is_name_match_required() ) {
 			$customer   = new WC_Customer( $user_id );
 			$first_name = $customer->get_billing_first_name();
 			$last_name  = $customer->get_billing_last_name();
@@ -146,14 +146,27 @@ class MD_Ajax {
 			}
 
 			if ( ! $this->military_otp->email_matches_name( $email, $first_name, $last_name ) ) {
-				wp_send_json_error(
-					sprintf(
+				$settings = md_get_military_otp_settings();
+				$match_type = $settings['require_name_match'];
+				
+				if ( 'both' === $match_type ) {
+					$error_message = sprintf(
 						/* translators: 1: first name, 2: last name */
 						__( 'The email username does not match your billing name (%1$s %2$s). The email local part must contain your first and last name (e.g., firstname.lastname@mail.mil).', 'military-discounts' ),
 						esc_html( $first_name ),
 						esc_html( $last_name )
-					)
-				);
+					);
+				} elseif ( 'first' === $match_type ) {
+					$error_message = sprintf(
+						/* translators: 1: first name */
+						__( 'The email username does not match your billing first name (%1$s). The email local part must contain your first name (e.g., firstname@mail.mil).', 'military-discounts' ),
+						esc_html( $first_name )
+					);
+				} else {
+					$error_message = __( 'The email username does not match your billing name.', 'military-discounts' );
+				}
+				
+				wp_send_json_error( $error_message );
 			}
 		}
 
@@ -438,7 +451,7 @@ class MD_Ajax {
 		}
 
 		// Check name matching if required.
-		if ( $this->military_otp->is_name_match_required() ) {
+		if ( 'none' !== $this->military_otp->is_name_match_required() ) {
 			$customer   = new WC_Customer( $user_id );
 			$first_name = $customer->get_billing_first_name();
 			$last_name  = $customer->get_billing_last_name();
@@ -448,14 +461,27 @@ class MD_Ajax {
 			}
 
 			if ( ! $this->military_otp->email_matches_name( $email, $first_name, $last_name ) ) {
-				wp_send_json_error(
-					sprintf(
+				$settings = md_get_military_otp_settings();
+				$match_type = $settings['require_name_match'];
+				
+				if ( 'both' === $match_type ) {
+					$error_message = sprintf(
 						/* translators: 1: first name, 2: last name */
 						__( 'The email username does not match your billing name (%1$s %2$s). The email local part must contain your first and last name (e.g., firstname.lastname@mail.mil).', 'military-discounts' ),
 						esc_html( $first_name ),
 						esc_html( $last_name )
-					)
-				);
+					);
+				} elseif ( 'first' === $match_type ) {
+					$error_message = sprintf(
+						/* translators: 1: first name */
+						__( 'The email username does not match your billing first name (%1$s). The email local part must contain your first name (e.g., firstname@mail.mil).', 'military-discounts' ),
+						esc_html( $first_name )
+					);
+				} else {
+					$error_message = __( 'The email username does not match your billing name.', 'military-discounts' );
+				}
+				
+				wp_send_json_error( $error_message );
 			}
 		}
 
