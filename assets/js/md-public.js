@@ -127,6 +127,30 @@
             }
         });
 
+        // Check billing name for military verification before proceeding to step 3
+        if (valid && verificationType === 'military') {
+            // We need to make an AJAX call to check billing name
+            $.ajax({
+                url: mdPublic.ajaxUrl,
+                type: 'POST',
+                async: false, // Make synchronous call to block form submission
+                data: {
+                    action: 'md_check_billing_name',
+                    nonce: mdPublic.nonce
+                },
+                success: function (response) {
+                    if (!response.success) {
+                        valid = false;
+                        showMessage('error', response.data);
+                    }
+                },
+                error: function () {
+                    valid = false;
+                    showMessage('error', mdPublic.strings.errorOccurred);
+                }
+            });
+        }
+
         return valid;
     }
 

@@ -67,6 +67,29 @@ class MD_Ajax {
 		add_action( 'wp_ajax_md_submit_veteran_verification', array( $this, 'ajax_submit_veteran_verification' ) );
 		add_action( 'wp_ajax_md_send_military_otp', array( $this, 'ajax_send_military_otp' ) );
 		add_action( 'wp_ajax_md_verify_military_otp', array( $this, 'ajax_verify_military_otp' ) );
+		add_action( 'wp_ajax_md_check_billing_name', array( $this, 'ajax_check_billing_name' ) );
+	}
+
+	/**
+	 * Check if user has billing first and last name.
+	 */
+	public function ajax_check_billing_name() {
+		check_ajax_referer( 'md_public_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( __( 'Please log in to continue.', 'military-discounts' ) );
+		}
+
+		$user_id = get_current_user_id();
+		$customer   = new WC_Customer( $user_id );
+		$first_name = $customer->get_billing_first_name();
+		$last_name  = $customer->get_billing_last_name();
+
+		if ( empty( $first_name ) || empty( $last_name ) ) {
+			wp_send_json_error( __( 'Please update your billing first and last name in your account before verifying.', 'military-discounts' ) );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
