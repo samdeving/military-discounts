@@ -162,10 +162,10 @@
 
         html += '</dl>';
         html += '</div>';
-        html += '<div class="md-form-actions">';
-        html += '<button type="button" class="button md-prev-step">' + mdPublic.strings.back + '</button>';
-        html += '<button type="button" class="button button-primary md-submit-veteran">' + mdPublic.strings.submit + '</button>';
-        html += '</div>';
+         html += '<div class="md-form-actions">';
+         html += '<button type="button" class="button wp-element-button md-prev-step">' + mdPublic.strings.back + '</button>';
+         html += '<button type="button" class="button button-primary wp-element-button md-submit-veteran">' + mdPublic.strings.submit + '</button>';
+         html += '</div>';
         html += '</div>';
 
         $content.html(html);
@@ -180,19 +180,19 @@
         html += '<h3>Verify Your Military Email</h3>';
         html += '<p>We\'ll send a verification code to:</p>';
         html += '<p><strong>' + escapeHtml(militaryEmail) + '</strong></p>';
-        html += '<div class="md-otp-send">';
-        html += '<button type="button" class="button button-primary md-send-otp">' + mdPublic.strings.submit + '</button>';
-        html += '</div>';
-        html += '<div class="md-otp-verify" style="display:none;">';
-        html += '<div class="md-otp-sent-message">' + mdPublic.strings.otpSent + '</div>';
-        html += '<div class="md-otp-input-wrapper">';
-        html += '<input type="text" class="md-otp-input" maxlength="6" placeholder="000000" pattern="[0-9]*" inputmode="numeric">';
-        html += '</div>';
-        html += '<button type="button" class="button button-primary md-verify-otp">' + mdPublic.strings.verifyCode + '</button>';
-        html += '<p class="md-resend-link"><a href="#" class="md-resend-otp">Resend code</a></p>';
-        html += '</div>';
-        html += '<div class="md-form-actions">';
-        html += '<button type="button" class="button md-prev-step">' + mdPublic.strings.back + '</button>';
+         html += '<div class="md-otp-send">';
+         html += '<button type="button" class="button button-primary wp-element-button md-send-otp">' + mdPublic.strings.submit + '</button>';
+         html += '</div>';
+         html += '<div class="md-otp-verify" style="display:none;">';
+         html += '<div class="md-otp-sent-message">' + mdPublic.strings.otpSent + '</div>';
+         html += '<div class="md-otp-input-wrapper">';
+         html += '<input type="text" class="md-otp-input" maxlength="6" placeholder="000000" pattern="[0-9]*" inputmode="numeric">';
+         html += '</div>';
+         html += '<button type="button" class="button button-primary wp-element-button md-verify-otp">' + mdPublic.strings.verifyCode + '</button>';
+         html += '<p class="md-resend-link"><a href="#" class="md-resend-otp">Resend code</a></p>';
+         html += '</div>';
+         html += '<div class="md-form-actions">';
+         html += '<button type="button" class="button wp-element-button md-prev-step">' + mdPublic.strings.back + '</button>';
         html += '</div>';
         html += '</div>';
 
