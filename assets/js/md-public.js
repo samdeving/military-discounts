@@ -186,7 +186,7 @@
          html += '<div class="md-otp-verify" style="display:none;">';
          html += '<div class="md-otp-sent-message">' + mdPublic.strings.otpSent + '</div>';
          html += '<div class="md-otp-input-wrapper">';
-         html += '<input type="text" class="md-otp-input" maxlength="6" placeholder="000000" pattern="[0-9]*" inputmode="numeric">';
+          html += '<input type="text" class="input-text md-otp-input" maxlength="6" placeholder="000000" pattern="[0-9]*" inputmode="numeric">';
          html += '</div>';
          html += '<button type="button" class="button button-primary wp-element-button md-verify-otp">' + mdPublic.strings.verifyCode + '</button>';
          html += '<p class="md-resend-link"><a href="#" class="md-resend-otp">Resend code</a></p>';
