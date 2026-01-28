@@ -99,7 +99,7 @@ class MD_Email_Reverification extends WC_Email {
 		$this->placeholders['{verification_type}']  = 'veteran' === $type
 			? __( 'veteran', 'military-discounts' )
 			: __( 'military', 'military-discounts' );
-		$this->placeholders['{customer_name}']      = $this->user->display_name;
+		$this->placeholders['{customer_name}']      = esc_html($this->user->display_name);
 		$this->placeholders['{reverification_url}'] = $this->reverification_url;
 
 		if ( $this->is_enabled() && $this->get_recipient() ) {

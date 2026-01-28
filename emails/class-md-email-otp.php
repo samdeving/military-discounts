@@ -101,7 +101,7 @@ class MD_Email_OTP extends WC_Email {
 
 		$this->placeholders['{otp_code}']      = $this->otp_code;
 		$this->placeholders['{otp_expiry}']    = $this->otp_expiry;
-		$this->placeholders['{customer_name}'] = $this->user->display_name;
+		$this->placeholders['{customer_name}'] = esc_html($this->user->display_name);
 
 		if ( $this->is_enabled() && $this->get_recipient() ) {
 			$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );

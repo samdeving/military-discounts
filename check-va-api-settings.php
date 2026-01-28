@@ -12,9 +12,9 @@ $settings = get_option('md_settings_va_api', array());
 
 echo "=== Current VA API Settings ===\n";
 echo "Enabled: " . (isset($settings['enabled']) ? ($settings['enabled'] ? 'Yes' : 'No') : 'Not set') . "\n";
-echo "API Key: '" . (isset($settings['api_key']) ? $settings['api_key'] : 'Not set') . "'\n";
-echo "API Key Length: " . (isset($settings['api_key']) ? strlen($settings['api_key']) : 0) . " characters\n";
-echo "API URL: '" . (isset($settings['api_url']) ? $settings['api_url'] : 'Not set') . "'\n";
+echo "API Key: '" . (isset($settings['api_key']) ? esc_html($settings['api_key']) : 'Not set') . "'\n";
+echo "API Key Length: " . (isset($settings['api_key']) ? absint(strlen($settings['api_key'])) : 0) . " characters\n";
+echo "API URL: '" . (isset($settings['api_url']) ? esc_html($settings['api_url']) : 'Not set') . "'\n";
 echo "Sandbox Mode: " . (isset($settings['sandbox']) ? ($settings['sandbox'] ? 'Yes' : 'No') : 'Not set') . "\n\n";
 
 // Get default settings
@@ -46,5 +46,5 @@ if (file_exists('includes/class-md-va-api.php')) {
     // Get API URL
     $api_url = $va_api->get_api_url();
     echo "=== API URL (from get_api_url()) ===\n";
-    echo $api_url . "\n";
+    echo esc_html($api_url) . "\n";
 }
