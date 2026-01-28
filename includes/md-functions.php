@@ -197,7 +197,7 @@ function md_get_military_otp_settings() {
 	$defaults = array(
 		'enabled'                 => true,
 		'whitelist_patterns'      => '*.mil',
-		'blacklist_patterns'      => '*ctr.mil,*contractor.mil',
+		'blacklist_patterns'      => '*ctr.mil,*civ.mil',
 		'otp_expiry'              => 15,
 		'require_name_match'      => false,
 		'lock_billing_first_name' => false,

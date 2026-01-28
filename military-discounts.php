@@ -139,7 +139,7 @@ function md_activate() {
 	$default_military_otp = array(
 		'enabled'            => true,
 		'whitelist_patterns' => '*.mil',
-		'blacklist_patterns' => '*ctr.mil,*contractor.mil',
+		'blacklist_patterns' => '*ctr.mil,*civ.mil',
 		'otp_expiry'         => 15,
 	);
 

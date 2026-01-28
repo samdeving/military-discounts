@@ -331,8 +331,8 @@ class MD_Settings {
 			array(
 				'option'      => 'md_settings_military_otp',
 				'field'       => 'blacklist_patterns',
-				'description' => __( 'Comma-separated patterns to block. Example: *ctr.mil,*contractor.mil', 'military-discounts' ),
-				'default'     => '*ctr.mil,*contractor.mil',
+				'description' => __( 'Comma-separated patterns to block. Example: *ctr.mil,*civ.mil', 'military-discounts' ),
+				'default'     => '*ctr.mil,*civ.mil',
 			)
 		);
 
