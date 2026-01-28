@@ -161,6 +161,13 @@ function md_activate() {
 	}
 	if ( false === get_option( 'md_settings_military_otp' ) ) {
 		add_option( 'md_settings_military_otp', $default_military_otp );
+	} else {
+		// Update existing option with new blacklist pattern if it's still using the old one
+		$current_military_otp = get_option( 'md_settings_military_otp' );
+		if ( isset( $current_military_otp['blacklist_patterns'] ) && $current_military_otp['blacklist_patterns'] === '*ctr.mil,*contractor.mil' ) {
+			$current_military_otp['blacklist_patterns'] = '*ctr.mil,*civ.mil';
+			update_option( 'md_settings_military_otp', $current_military_otp );
+		}
 	}
 	if ( false === get_option( 'md_settings_queue' ) ) {
 		add_option( 'md_settings_queue', $default_queue );
@@ -178,6 +185,18 @@ function md_activate() {
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'md_activate' );
+
+/**
+ * Upgrade function to update existing options
+ */
+function md_upgrade_options() {
+	$current_military_otp = get_option( 'md_settings_military_otp' );
+	if ( isset( $current_military_otp['blacklist_patterns'] ) && $current_military_otp['blacklist_patterns'] === '*ctr.mil,*contractor.mil' ) {
+		$current_military_otp['blacklist_patterns'] = '*ctr.mil,*civ.mil';
+		update_option( 'md_settings_military_otp', $current_military_otp );
+	}
+}
+add_action( 'plugins_loaded', 'md_upgrade_options' );
 
 /**
  * Plugin deactivation hook.
