@@ -506,7 +506,6 @@ class MD_Ajax {
 			set_transient( 'md_otp_email_' . $user_id, $email, 15 * MINUTE_IN_SECONDS );
 
 			wp_send_json_success( array(
-				'message'     => __( 'Verification code sent! Check your email.', 'military-discounts' ),
 				'expiry_time' => $this->military_otp->get_otp_expiry_time( $user_id ),
 			) );
 		} else {

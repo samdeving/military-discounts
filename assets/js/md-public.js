@@ -298,7 +298,7 @@
                     $('.md-otp-send').hide();
                     $('.md-otp-verify').show();
                     $('.md-otp-input').focus();
-                    showMessage('success', response.data.message);
+
                 } else {
                     showMessage('error', response.data);
                 }
