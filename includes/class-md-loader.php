@@ -123,6 +123,7 @@ class MD_Loader {
 		$emails['MD_Email_Verification_Denied']   = new MD_Email_Verification_Denied();
 		$emails['MD_Email_OTP']                   = new MD_Email_OTP();
 		$emails['MD_Email_Reverification']        = new MD_Email_Reverification();
+		$emails['MD_Email_Lockout']               = new MD_Email_Lockout();
 
 		return $emails;
 	}

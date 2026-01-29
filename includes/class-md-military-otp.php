@@ -110,9 +110,25 @@ If you did not request this code, please ignore this email.
 	 * @return bool True if valid.
 	 */
 	public function validate_otp( $user_id, $input_otp ) {
+		$security_settings = md_get_security_settings();
+
+		// Check lockout status
+		if ( $security_settings['enable_lockout'] && md_is_locked_out( $user_id, 'military' ) ) {
+			$remaining = md_get_lockout_remaining( $user_id, 'military' );
+			throw new Exception( sprintf( esc_html__( 'Too many failed verification attempts. Please try again in %d minutes.', 'military-discounts' ), $remaining ) );
+		}
+
 		$stored_otp = get_transient( 'md_otp_' . $user_id );
 
 		if ( empty( $stored_otp ) ) {
+			// Increment failed attempts
+			if ( $security_settings['enable_lockout'] ) {
+				$count = md_increment_failed_attempts( $user_id, 'military' );
+				$max_attempts = $security_settings['max_failed_military_attempts'];
+				if ( $count >= $max_attempts ) {
+					md_set_lockout( $user_id, 'military', $security_settings['military_lockout_duration'] );
+				}
+			}
 			return false;
 		}
 
@@ -123,6 +139,19 @@ If you did not request this code, please ignore this email.
 			// Delete the OTP after successful validation.
 			delete_transient( 'md_otp_' . $user_id );
 			delete_transient( 'md_otp_sent_' . $user_id );
+			// Reset failed attempts
+			if ( $security_settings['enable_lockout'] ) {
+				md_reset_failed_attempts( $user_id, 'military' );
+			}
+		} else {
+			// Increment failed attempts
+			if ( $security_settings['enable_lockout'] ) {
+				$count = md_increment_failed_attempts( $user_id, 'military' );
+				$max_attempts = $security_settings['max_failed_military_attempts'];
+				if ( $count >= $max_attempts ) {
+					md_set_lockout( $user_id, 'military', $security_settings['military_lockout_duration'] );
+				}
+			}
 		}
 
 		return $is_valid;

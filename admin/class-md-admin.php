@@ -31,6 +31,7 @@ class MD_Admin {
 		// AJAX handlers for admin actions.
 		add_action( 'wp_ajax_md_admin_set_status', array( $this, 'ajax_set_status' ) );
 		add_action( 'wp_ajax_md_admin_remove_status', array( $this, 'ajax_remove_status' ) );
+		add_action( 'wp_ajax_md_admin_reset_attempts', array( $this, 'ajax_reset_attempts' ) );
 	}
 
 	/**
@@ -119,6 +120,7 @@ class MD_Admin {
 			'va-api'       => __( 'VA API', 'military-discounts' ),
 			'military-otp' => __( 'Military OTP', 'military-discounts' ),
 			'queue'        => __( 'Queue', 'military-discounts' ),
+			'security'     => __( 'Verification Security', 'military-discounts' ),
 			'form-builder' => __( 'Form Builder', 'military-discounts' ),
 			'logs'         => __( 'VA API Logs', 'military-discounts' ),
 		);
@@ -157,6 +159,9 @@ class MD_Admin {
 						break;
 					case 'queue':
 						$this->render_queue_tab();
+						break;
+					case 'security':
+						$this->render_security_tab();
 						break;
 					case 'form-builder':
 						$this->render_form_builder_tab();
@@ -292,6 +297,21 @@ class MD_Admin {
 	}
 
 	/**
+	 * Render verification security settings tab.
+	 */
+	private function render_security_tab() {
+		?>
+		<form method="post" action="options.php">
+			<?php
+			settings_fields( 'md_settings_security' );
+			do_settings_sections( 'md-settings-security' );
+			submit_button();
+			?>
+		</form>
+		<?php
+	}
+
+	/**
 	 * Render form builder tab.
 	 */
 	private function render_form_builder_tab() {
@@ -410,6 +430,13 @@ class MD_Admin {
 		$status = md_get_verification_status( $user->ID );
 		$queue  = new MD_Queue( new MD_Encryption() );
 		$pending_item = $queue->get_from_queue( $user->ID );
+		$security_settings = md_get_security_settings();
+
+		// Get failed attempts and lockout information
+		$failed_veteran = md_get_failed_attempts( $user->ID, 'veteran' );
+		$failed_military = md_get_failed_attempts( $user->ID, 'military' );
+		$veteran_lockout = md_get_lockout_remaining( $user->ID, 'veteran' );
+		$military_lockout = md_get_lockout_remaining( $user->ID, 'military' );
 
 		?>
 		<h2><?php esc_html_e( 'Military Discount Status', 'military-discounts' ); ?></h2>
@@ -495,12 +522,47 @@ class MD_Admin {
 				</td>
 			</tr>
 			<?php endif; ?>
+			<?php if ( $failed_veteran > 0 || $failed_military > 0 || $veteran_lockout > 0 || $military_lockout > 0 ) : ?>
+			<tr>
+				<th><?php esc_html_e( 'Verification Attempts', 'military-discounts' ); ?></th>
+				<td>
+					<?php if ( $failed_veteran > 0 ) : ?>
+						<p>
+							<strong><?php esc_html_e( 'Veteran:', 'military-discounts' ); ?></strong> 
+							<?php printf( esc_html__( '%d/%d failed attempts', 'military-discounts' ), $failed_veteran, $security_settings['max_failed_veteran_attempts'] ); ?>
+							<?php if ( $veteran_lockout > 0 ) : ?>
+								<span class="md-status-badge md-status-locked">
+									<?php printf( esc_html__( 'Locked for %d min', 'military-discounts' ), $veteran_lockout ); ?>
+								</span>
+							<?php endif; ?>
+						</p>
+					<?php endif; ?>
+					<?php if ( $failed_military > 0 ) : ?>
+						<p>
+							<strong><?php esc_html_e( 'Military:', 'military-discounts' ); ?></strong> 
+							<?php printf( esc_html__( '%d/%d failed attempts', 'military-discounts' ), $failed_military, $security_settings['max_failed_military_attempts'] ); ?>
+							<?php if ( $military_lockout > 0 ) : ?>
+								<span class="md-status-badge md-status-locked">
+									<?php printf( esc_html__( 'Locked for %d min', 'military-discounts' ), $military_lockout ); ?>
+								</span>
+							<?php endif; ?>
+						</p>
+					<?php endif; ?>
+					<?php if ( $failed_veteran > 0 || $failed_military > 0 ) : ?>
+						<button type="button" class="button button-secondary md-reset-attempts" data-user="<?php echo esc_attr( $user->ID ); ?>">
+							<?php esc_html_e( 'Reset Failed Attempts', 'military-discounts' ); ?>
+						</button>
+					<?php endif; ?>
+				</td>
+			</tr>
+			<?php endif; ?>
 		</table>
 		<style>
 			.md-status-badge { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; margin-right: 10px; }
 			.md-status-verified { background: #d4edda; color: #155724; }
 			.md-status-none { background: #f8d7da; color: #721c24; }
 			.md-status-pending { background: #fff3cd; color: #856404; }
+			.md-status-locked { background: #f5c6cb; color: #721c24; }
 			#md-admin-user-status .button { margin-left: 10px; }
 		</style>
 		<script>
@@ -535,6 +597,24 @@ class MD_Admin {
 					nonce: '<?php echo esc_js( wp_create_nonce( 'md_admin_nonce' ) ); ?>',
 					user_id: userId,
 					type: type
+				}, function(response) {
+					if (response.success) {
+						location.reload();
+					} else {
+						alert(response.data || 'Error');
+						btn.prop('disabled', false);
+					}
+				});
+			});
+			$('#md-admin-user-status').on('click', '.md-reset-attempts', function() {
+				if (!confirm('<?php esc_html_e( 'Are you sure you want to reset all failed attempts?', 'military-discounts' ); ?>')) return;
+				var btn = $(this);
+				var userId = btn.data('user');
+				btn.prop('disabled', true).text('<?php esc_html_e( 'Processing...', 'military-discounts' ); ?>');
+				$.post(ajaxurl, {
+					action: 'md_admin_reset_attempts',
+					nonce: '<?php echo esc_js( wp_create_nonce( 'md_admin_nonce' ) ); ?>',
+					user_id: userId
 				}, function(response) {
 					if (response.success) {
 						location.reload();
@@ -599,6 +679,29 @@ class MD_Admin {
 		// Clear any pending verification.
 		$queue = new MD_Queue( new MD_Encryption() );
 		$queue->remove_from_queue( $user_id );
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * AJAX handler to reset failed attempts.
+	 */
+	public function ajax_reset_attempts() {
+		check_ajax_referer( 'md_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( __( 'Permission denied.', 'military-discounts' ) );
+		}
+
+		$user_id = isset( $_POST['user_id'] ) ? absint( $_POST['user_id'] ) : 0;
+
+		if ( ! $user_id ) {
+			wp_send_json_error( __( 'Invalid request.', 'military-discounts' ) );
+		}
+
+		// Reset both veteran and military failed attempts
+		md_reset_failed_attempts( $user_id, 'veteran' );
+		md_reset_failed_attempts( $user_id, 'military' );
 
 		wp_send_json_success();
 	}

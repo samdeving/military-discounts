@@ -350,7 +350,14 @@
                     var redirectDelay = response.data.redirect_delay || 2000;
                     showSuccessAndReload(response.data.message, redirectUrl, redirectDelay);
                 } else {
-                    showMessage('error', response.data);
+                    var message = response.data.message || response.data;
+                    
+                    // If we have failed attempts data, update the UI
+                    if (response.data.failed_attempts) {
+                        updateFailedAttemptsUI('military', response.data.failed_attempts);
+                    }
+                    
+                    showMessage('error', message);
                     $btn.prop('disabled', false).text(mdPublic.strings.verifyCode);
                 }
             },
@@ -386,7 +393,14 @@
                         showSuccessAndReload(response.data.message);
                     }
                 } else {
-                    showMessage('error', response.data.message || response.data);
+                    var message = response.data.message || response.data;
+                    
+                    // If we have failed attempts data, update the UI
+                    if (response.data.failed_attempts) {
+                        updateFailedAttemptsUI('veteran', response.data.failed_attempts);
+                    }
+                    
+                    showMessage('error', message);
                     $btn.prop('disabled', false).text(mdPublic.strings.submit);
                 }
             },
@@ -464,6 +478,46 @@
 
     function isValidEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // Update failed attempts UI
+    function updateFailedAttemptsUI(type, failedAttempts) {
+        var $attemptsContainer = $('.md-failed-attempts');
+        var selector = type === 'veteran' ? '.md-failed-veteran' : '.md-failed-military';
+        var $attemptsElement = $attemptsContainer.find(selector);
+        
+        // If the attempts element doesn't exist, create it
+        if ($attemptsElement.length === 0) {
+            var typeText = type === 'veteran' ? 'Veteran' : 'Military';
+            var html = '<p class="md-failed-' + type + '">' + 
+                typeText + ' verification: ' + failedAttempts.count + '/' + failedAttempts.max + ' failed attempts' + 
+                '<span class="md-attempts-bar">' +
+                '<span class="md-attempts-progress-fill" style="width: ' + failedAttempts.progress + '%;"></span>' +
+                '</span>' +
+                '</p>';
+            $attemptsContainer.append(html);
+            $attemptsElement = $attemptsContainer.find(selector);
+        } else {
+            // Update existing element
+            var typeText = type === 'veteran' ? 'Veteran' : 'Military';
+            var newText = typeText + ' verification: ' + failedAttempts.count + '/' + failedAttempts.max + ' failed attempts';
+            $attemptsElement.contents().first().replaceWith(newText);
+            
+            // Update progress bar
+            var $progressBar = $attemptsElement.find('.md-attempts-progress-fill');
+            $progressBar.css('width', failedAttempts.progress + '%');
+            
+            // Update progress bar class based on progress
+            $progressBar.removeClass('warning danger');
+            if (failedAttempts.progress >= 80) {
+                $progressBar.addClass('danger');
+            } else if (failedAttempts.progress >= 50) {
+                $progressBar.addClass('warning');
+            }
+        }
+        
+        // Ensure the container is visible
+        $attemptsContainer.show();
     }
 
 })(jQuery);

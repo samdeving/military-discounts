@@ -432,6 +432,83 @@
     margin: 0;
 }
 
+/* Failed attempts */
+.md-failed-attempts {
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+
+.md-failed-attempts p {
+    margin: 0;
+    color: #856404;
+    font-size: 14px;
+}
+
+.md-failed-veteran,
+.md-failed-military {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.md-failed-veteran:last-child,
+.md-failed-military:last-child {
+    margin-bottom: 0;
+}
+
+.md-attempts-progress {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+.md-attempts-bar {
+    display: inline-block;
+    width: 100px;
+    height: 6px;
+    background: #ddd;
+    border-radius: 3px;
+    margin-left: 10px;
+    overflow: hidden;
+}
+
+.md-attempts-progress-fill {
+    height: 100%;
+    background: #ffc107;
+    transition: width 0.3s ease;
+}
+
+.md-attempts-progress-fill.warning {
+    background: #fd7e14;
+}
+
+.md-attempts-progress-fill.danger {
+    background: #dc3545;
+}
+
+/* Locked status */
+.md-status-locked {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border: 1px solid #f1b0b7;
+}
+
+.md-status-locked .md-status-icon .dashicons {
+    color: #dc3545;
+}
+
+.md-status-locked .md-status-content h3 {
+    color: #721c24;
+}
+
+.md-status-locked .md-status-content p {
+    color: #721c24;
+    opacity: 0.8;
+}
+
 /* Loading state */
 .md-loading {
     position: relative;

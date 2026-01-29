@@ -53,6 +53,119 @@ class MD_Settings {
 		$this->register_military_otp_settings();
 		$this->register_queue_settings();
 		$this->register_logs_settings();
+		$this->register_security_settings();
+	}
+
+	/**
+	 * Register verification security settings.
+	 */
+	private function register_security_settings() {
+		register_setting(
+			'md_settings_security',
+			'md_settings_security',
+			array(
+				'sanitize_callback' => array( $this, 'sanitize_security_settings' ),
+			)
+		);
+
+		add_settings_section(
+			'md_security_section',
+			__( 'Verification Security', 'military-discounts' ),
+			array( $this, 'render_security_section' ),
+			'md-settings-security'
+		);
+
+		add_settings_field(
+			'enable_lockout',
+			__( 'Enable Lockout Feature', 'military-discounts' ),
+			array( $this, 'render_checkbox_field' ),
+			'md-settings-security',
+			'md_security_section',
+			array(
+				'option'  => 'md_settings_security',
+				'field'   => 'enable_lockout',
+				'label'   => __( 'Enable failed attempts tracking and lockout feature', 'military-discounts' ),
+				'default' => true,
+			)
+		);
+
+		add_settings_field(
+			'max_failed_veteran_attempts',
+			__( 'Max Failed Veteran Attempts', 'military-discounts' ),
+			array( $this, 'render_number_field' ),
+			'md-settings-security',
+			'md_security_section',
+			array(
+				'option'      => 'md_settings_security',
+				'field'       => 'max_failed_veteran_attempts',
+				'description' => __( 'Number of failed veteran verification attempts before lockout', 'military-discounts' ),
+				'default'     => 5,
+				'min'         => 1,
+				'max'         => 20,
+			)
+		);
+
+		add_settings_field(
+			'veteran_lockout_duration',
+			__( 'Veteran Lockout Duration (minutes)', 'military-discounts' ),
+			array( $this, 'render_number_field' ),
+			'md-settings-security',
+			'md_security_section',
+			array(
+				'option'      => 'md_settings_security',
+				'field'       => 'veteran_lockout_duration',
+				'description' => __( 'Minutes to lock out after maximum failed veteran attempts', 'military-discounts' ),
+				'default'     => 60,
+				'min'         => 5,
+				'max'         => 1440,
+			)
+		);
+
+		add_settings_field(
+			'max_failed_military_attempts',
+			__( 'Max Failed Military Attempts', 'military-discounts' ),
+			array( $this, 'render_number_field' ),
+			'md-settings-security',
+			'md_security_section',
+			array(
+				'option'      => 'md_settings_security',
+				'field'       => 'max_failed_military_attempts',
+				'description' => __( 'Number of failed military verification attempts before lockout', 'military-discounts' ),
+				'default'     => 5,
+				'min'         => 1,
+				'max'         => 20,
+			)
+		);
+
+		add_settings_field(
+			'military_lockout_duration',
+			__( 'Military Lockout Duration (minutes)', 'military-discounts' ),
+			array( $this, 'render_number_field' ),
+			'md-settings-security',
+			'md_security_section',
+			array(
+				'option'      => 'md_settings_security',
+				'field'       => 'military_lockout_duration',
+				'description' => __( 'Minutes to lock out after maximum failed military attempts', 'military-discounts' ),
+				'default'     => 60,
+				'min'         => 5,
+				'max'         => 1440,
+			)
+		);
+
+		add_settings_field(
+			'send_lockout_notification',
+			__( 'Lockout Notification Email', 'military-discounts' ),
+			array( $this, 'render_checkbox_field' ),
+			'md-settings-security',
+			'md_security_section',
+			array(
+				'option'      => 'md_settings_security',
+				'field'       => 'send_lockout_notification',
+				'label'       => __( 'Send email notification when user is locked out', 'military-discounts' ),
+				'default'     => true,
+			)
+		);
 	}
 
 	/**
@@ -512,6 +625,29 @@ class MD_Settings {
 
 	public function render_queue_section() {
 		echo '<p>' . esc_html__( 'Configure how failed verification attempts are retried.', 'military-discounts' ) . '</p>';
+	}
+
+	public function render_security_section() {
+		echo '<p>' . esc_html__( 'Configure security settings for verification attempts.', 'military-discounts' ) . '</p>';
+	}
+
+	/**
+	 * Sanitize security settings.
+	 *
+	 * @param array $input Input settings.
+	 * @return array Sanitized settings.
+	 */
+	public function sanitize_security_settings( $input ) {
+		$sanitized = array();
+
+		$sanitized['enable_lockout']           = ! empty( $input['enable_lockout'] );
+		$sanitized['max_failed_veteran_attempts'] = isset( $input['max_failed_veteran_attempts'] ) ? min( 20, max( 1, absint( $input['max_failed_veteran_attempts'] ) ) ) : 5;
+		$sanitized['veteran_lockout_duration']    = isset( $input['veteran_lockout_duration'] ) ? min( 1440, max( 5, absint( $input['veteran_lockout_duration'] ) ) ) : 60;
+		$sanitized['max_failed_military_attempts'] = isset( $input['max_failed_military_attempts'] ) ? min( 20, max( 1, absint( $input['max_failed_military_attempts'] ) ) ) : 5;
+		$sanitized['military_lockout_duration']    = isset( $input['military_lockout_duration'] ) ? min( 1440, max( 5, absint( $input['military_lockout_duration'] ) ) ) : 60;
+		$sanitized['send_lockout_notification']    = ! empty( $input['send_lockout_notification'] );
+
+		return $sanitized;
 	}
 
 	/**

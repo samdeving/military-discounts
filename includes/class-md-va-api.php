@@ -41,9 +41,17 @@ class MD_VA_API {
 	 */
 	public function verify( array $data ) {
 		$settings = md_get_va_api_settings();
+		$security_settings = md_get_security_settings();
 
 		if ( empty( $settings['api_key'] ) ) {
 			throw new Exception( esc_html__( 'VA API key not configured.', 'military-discounts' ) );
+		}
+
+		// Check lockout status
+		$user_id = isset( $data['user_id'] ) ? $data['user_id'] : 0;
+		if ( $security_settings['enable_lockout'] && $user_id > 0 && md_is_locked_out( $user_id, 'veteran' ) ) {
+			$remaining = md_get_lockout_remaining( $user_id, 'veteran' );
+			throw new Exception( sprintf( esc_html__( 'Too many failed verification attempts. Please try again in %d minutes.', 'military-discounts' ), $remaining ) );
 		}
 
 		$api_url = $this->get_api_url();

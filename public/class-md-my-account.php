@@ -256,6 +256,8 @@ class MD_My_Account {
 	private function render_verification_form() {
 		$va_settings  = md_get_va_api_settings();
 		$otp_settings = md_get_military_otp_settings();
+		$security_settings = md_get_security_settings();
+		$user_id = get_current_user_id();
 
 		$show_veteran  = ! empty( $va_settings['enabled'] );
 		$show_military = ! empty( $otp_settings['enabled'] );
@@ -263,6 +265,71 @@ class MD_My_Account {
 		if ( ! $show_veteran && ! $show_military ) {
 			echo '<p>' . esc_html__( 'No verification methods are currently available.', 'military-discounts' ) . '</p>';
 			return;
+		}
+
+		// Check lockout status
+		if ( $security_settings['enable_lockout'] ) {
+			$is_locked_veteran = $show_veteran && md_is_locked_out( $user_id, 'veteran' );
+			$is_locked_military = $show_military && md_is_locked_out( $user_id, 'military' );
+
+			if ( $is_locked_veteran || $is_locked_military ) {
+				$remaining = 0;
+				$type = '';
+				
+				if ( $is_locked_veteran ) {
+					$remaining = md_get_lockout_remaining( $user_id, 'veteran' );
+					$type = __( 'veteran', 'military-discounts' );
+				} elseif ( $is_locked_military ) {
+					$remaining = md_get_lockout_remaining( $user_id, 'military' );
+					$type = __( 'military', 'military-discounts' );
+				}
+
+				?>
+				<div class="md-status md-status-locked">
+					<div class="md-status-icon">
+						<span class="dashicons dashicons-lock"></span>
+					</div>
+					<div class="md-status-content">
+						<h3><?php esc_html_e( 'Verification Locked', 'military-discounts' ); ?></h3>
+						<p><?php printf( esc_html__( 'Too many failed %s verification attempts. Please try again in %d minutes.', 'military-discounts' ), $type, $remaining ); ?></p>
+					</div>
+				</div>
+				<?php
+
+				// If both methods are locked, don't show the form
+				if ( $is_locked_veteran && $is_locked_military ) {
+					return;
+				}
+			}
+
+			// Show failed attempts info with progress
+			$failed_veteran = $show_veteran ? md_get_failed_attempts( $user_id, 'veteran' ) : 0;
+			$failed_military = $show_military ? md_get_failed_attempts( $user_id, 'military' ) : 0;
+
+			if ( $failed_veteran > 0 || $failed_military > 0 ) {
+				?>
+				<div class="md-failed-attempts">
+					<?php if ( $failed_veteran > 0 ) : ?>
+						<p class="md-failed-veteran">
+							<?php printf( esc_html__( 'Veteran verification: %d/%d failed attempts', 'military-discounts' ), $failed_veteran, $security_settings['max_failed_veteran_attempts'] ); ?>
+							<span class="md-attempts-bar">
+								<span class="md-attempts-progress-fill <?php echo ( $failed_veteran >= $security_settings['max_failed_veteran_attempts'] * 0.8 ) ? 'danger' : ( $failed_veteran >= $security_settings['max_failed_veteran_attempts'] * 0.5 ? 'warning' : '' ); ?>" 
+									  style="width: <?php echo ( $failed_veteran / $security_settings['max_failed_veteran_attempts'] ) * 100; ?>%;"></span>
+							</span>
+						</p>
+					<?php endif; ?>
+					<?php if ( $failed_military > 0 ) : ?>
+						<p class="md-failed-military">
+							<?php printf( esc_html__( 'Military verification: %d/%d failed attempts', 'military-discounts' ), $failed_military, $security_settings['max_failed_military_attempts'] ); ?>
+							<span class="md-attempts-bar">
+								<span class="md-attempts-progress-fill <?php echo ( $failed_military >= $security_settings['max_failed_military_attempts'] * 0.8 ) ? 'danger' : ( $failed_military >= $security_settings['max_failed_military_attempts'] * 0.5 ? 'warning' : '' ); ?>" 
+									  style="width: <?php echo ( $failed_military / $security_settings['max_failed_military_attempts'] ) * 100; ?>%;"></span>
+							</span>
+						</p>
+					<?php endif; ?>
+				</div>
+				<?php
+			}
 		}
 
 		?>

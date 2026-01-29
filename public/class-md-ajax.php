@@ -350,6 +350,13 @@ class MD_Ajax {
 			wp_send_json_error( __( 'You already have a pending verification request.', 'military-discounts' ) );
 		}
 
+		// Check lockout status
+		$security_settings = md_get_security_settings();
+		if ( $security_settings['enable_lockout'] && md_is_locked_out( $user_id, 'veteran' ) ) {
+			$remaining = md_get_lockout_remaining( $user_id, 'veteran' );
+			wp_send_json_error( sprintf( __( 'Too many failed verification attempts. Please try again in %d minutes.', 'military-discounts' ), $remaining ) );
+		}
+
 		// Get and validate form data.
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized in loop below.
 		$form_data = isset( $_POST['formData'] ) ? wp_unslash( $_POST['formData'] ) : array();
@@ -386,6 +393,10 @@ class MD_Ajax {
 			if ( 'confirmed' === $result['status'] ) {
 				// Verification successful.
 				md_set_verified( $user_id, 'veteran', true );
+				// Reset failed attempts
+				if ( $security_settings['enable_lockout'] ) {
+					md_reset_failed_attempts( $user_id, 'veteran' );
+				}
 
 				// Get redirect settings from settings
 				$settings = get_option( 'md_settings_general', array() );
@@ -409,15 +420,47 @@ class MD_Ajax {
 						'status'  => 'queued',
 						'message' => __( 'Your verification request has been submitted and is being processed. You will receive an email notification once complete.', 'military-discounts' ),
 					) );
-				} else {
-					// Permanent denial.
-					wp_send_json_error( array(
-						'status'  => 'denied',
-						'message' => MD_VA_API::get_denial_reason( $reason ),
-					) );
+					} else {
+					// Permanent denial - increment failed attempts
+					if ( $security_settings['enable_lockout'] ) {
+						$count = md_increment_failed_attempts( $user_id, 'veteran' );
+						$max_attempts = $security_settings['max_failed_veteran_attempts'];
+						if ( $count >= $max_attempts ) {
+							md_set_lockout( $user_id, 'veteran', $security_settings['veteran_lockout_duration'] );
+							$remaining = md_get_lockout_remaining( $user_id, 'veteran' );
+							wp_send_json_error( array(
+								'status'  => 'locked',
+								'message' => sprintf( __( 'Too many failed verification attempts. Please try again in %d minutes.', 'military-discounts' ), $remaining ),
+							) );
+						} else {
+							$progress = ( $count / $max_attempts ) * 100;
+							wp_send_json_error( array(
+								'status'  => 'denied',
+								'message' => sprintf( __( 'Failed attempt %d/%d. %s', 'military-discounts' ), $count, $max_attempts, MD_VA_API::get_denial_reason( $reason ) ),
+								'failed_attempts' => array(
+									'count' => $count,
+									'max' => $max_attempts,
+									'progress' => $progress,
+								),
+							) );
+						}
+					} else {
+						wp_send_json_error( array(
+							'status'  => 'denied',
+							'message' => MD_VA_API::get_denial_reason( $reason ),
+						) );
+					}
 				}
 			}
 		} catch ( Exception $e ) {
+			// Check if this is a lockout exception
+			if ( strpos( $e->getMessage(), 'Too many failed verification attempts' ) !== false ) {
+				wp_send_json_error( array(
+					'status'  => 'locked',
+					'message' => $e->getMessage(),
+				) );
+			}
+
 			// API error, queue for retry.
 			$this->queue->add_to_queue( $user_id, 'veteran', $verification_data );
 
@@ -440,6 +483,13 @@ class MD_Ajax {
 
 		$user_id = get_current_user_id();
 		$email   = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+
+		// Check lockout status
+		$security_settings = md_get_security_settings();
+		if ( $security_settings['enable_lockout'] && md_is_locked_out( $user_id, 'military' ) ) {
+			$remaining = md_get_lockout_remaining( $user_id, 'military' );
+			wp_send_json_error( sprintf( __( 'Too many failed verification attempts. Please try again in %d minutes.', 'military-discounts' ), $remaining ) );
+		}
 
 		if ( empty( $email ) || ! is_email( $email ) ) {
 			wp_send_json_error( __( 'Please enter a valid email address.', 'military-discounts' ) );
@@ -531,26 +581,57 @@ class MD_Ajax {
 		}
 
 		// Validate OTP.
-		if ( $this->military_otp->validate_otp( $user_id, $otp ) ) {
-			// Mark as verified.
-			md_set_verified( $user_id, 'military', true );
+		try {
+			if ( $this->military_otp->validate_otp( $user_id, $otp ) ) {
+				// Mark as verified.
+				md_set_verified( $user_id, 'military', true );
 
-			// Clean up transients.
-			delete_transient( 'md_otp_email_' . $user_id );
+				// Clean up transients.
+				delete_transient( 'md_otp_email_' . $user_id );
 
-			// Get redirect settings from settings
-			$settings = get_option( 'md_settings_general', array() );
-			$redirect_url = isset( $settings['redirect_url'] ) ? $settings['redirect_url'] : '';
-			$redirect_delay = isset( $settings['redirect_delay'] ) ? max( 0, absint( $settings['redirect_delay'] ) ) : 2000;
+				// Get redirect settings from settings
+				$settings = get_option( 'md_settings_general', array() );
+				$redirect_url = isset( $settings['redirect_url'] ) ? $settings['redirect_url'] : '';
+				$redirect_delay = isset( $settings['redirect_delay'] ) ? max( 0, absint( $settings['redirect_delay'] ) ) : 2000;
 
-			wp_send_json_success( array(
-				'status'        => 'approved',
-				'message'       => __( 'Your active military status has been verified! You can now use military discounts.', 'military-discounts' ),
-				'redirect_url'  => $redirect_url,
-				'redirect_delay' => $redirect_delay,
+				wp_send_json_success( array(
+					'status'        => 'approved',
+					'message'       => __( 'Your active military status has been verified! You can now use military discounts.', 'military-discounts' ),
+					'redirect_url'  => $redirect_url,
+					'redirect_delay' => $redirect_delay,
+				) );
+			} else {
+				$security_settings = md_get_security_settings();
+				if ( $security_settings['enable_lockout'] ) {
+					$count = md_get_failed_attempts( $user_id, 'military' );
+					$max_attempts = $security_settings['max_failed_military_attempts'];
+					$progress = ( $count / $max_attempts ) * 100;
+					if ( $count >= $max_attempts ) {
+						$remaining = md_get_lockout_remaining( $user_id, 'military' );
+						wp_send_json_error( array(
+							'status'  => 'locked',
+							'message' => sprintf( __( 'Too many failed verification attempts. Please try again in %d minutes.', 'military-discounts' ), $remaining ),
+						) );
+					} else {
+						wp_send_json_error( array(
+							'status'  => 'invalid',
+							'message' => sprintf( __( 'Failed attempt %d/%d. Invalid or expired verification code. Please try again.', 'military-discounts' ), $count, $max_attempts ),
+							'failed_attempts' => array(
+								'count' => $count,
+								'max' => $max_attempts,
+								'progress' => $progress,
+							),
+						) );
+					}
+				} else {
+					wp_send_json_error( __( 'Invalid or expired verification code. Please try again.', 'military-discounts' ) );
+				}
+			}
+		} catch ( Exception $e ) {
+			wp_send_json_error( array(
+				'status'  => 'locked',
+				'message' => $e->getMessage(),
 			) );
-		} else {
-			wp_send_json_error( __( 'Invalid or expired verification code. Please try again.', 'military-discounts' ) );
 		}
 	}
 }

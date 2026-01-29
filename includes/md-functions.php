@@ -238,3 +238,133 @@ function md_is_encryption_enabled() {
 	$settings = md_get_general_settings();
 	return empty( $settings['disable_encryption'] );
 }
+
+/**
+ * Get verification security settings.
+ *
+ * @return array Verification security settings.
+ */
+function md_get_security_settings() {
+	$defaults = array(
+		'enable_lockout'           => true,
+		'max_failed_veteran_attempts' => 5,
+		'veteran_lockout_duration'    => 60,
+		'max_failed_military_attempts' => 5,
+		'military_lockout_duration'    => 60,
+		'send_lockout_notification'    => true,
+	);
+
+	return wp_parse_args( get_option( 'md_settings_security', array() ), $defaults );
+}
+
+/**
+ * Get failed attempts count.
+ *
+ * @param int    $user_id User ID.
+ * @param string $type    Verification type ('veteran' or 'military').
+ * @return int Number of failed attempts.
+ */
+function md_get_failed_attempts( $user_id, $type ) {
+	$meta_key = '_md_failed_' . $type . '_attempts';
+	return absint( get_user_meta( $user_id, $meta_key, true ) );
+}
+
+/**
+ * Increment failed attempts count.
+ *
+ * @param int    $user_id User ID.
+ * @param string $type    Verification type ('veteran' or 'military').
+ * @return int New failed attempts count.
+ */
+function md_increment_failed_attempts( $user_id, $type ) {
+	$count = md_get_failed_attempts( $user_id, $type );
+	$new_count = $count + 1;
+
+	update_user_meta( $user_id, '_md_failed_' . $type . '_attempts', $new_count );
+	update_user_meta( $user_id, '_md_last_' . $type . '_attempt_at', time() );
+
+	return $new_count;
+}
+
+/**
+ * Reset failed attempts count.
+ *
+ * @param int    $user_id User ID.
+ * @param string $type    Verification type ('veteran' or 'military').
+ */
+function md_reset_failed_attempts( $user_id, $type ) {
+	delete_user_meta( $user_id, '_md_failed_' . $type . '_attempts' );
+	delete_user_meta( $user_id, '_md_last_' . $type . '_attempt_at' );
+	delete_user_meta( $user_id, '_md_' . $type . '_lockout_until' );
+}
+
+/**
+ * Check if user is locked out.
+ *
+ * @param int    $user_id User ID.
+ * @param string $type    Verification type ('veteran' or 'military').
+ * @return bool True if locked out, false otherwise.
+ */
+function md_is_locked_out( $user_id, $type ) {
+	$lockout_until = get_user_meta( $user_id, '_md_' . $type . '_lockout_until', true );
+
+	if ( ! $lockout_until ) {
+		return false;
+	}
+
+	return time() < $lockout_until;
+}
+
+/**
+ * Get remaining lockout time in minutes.
+ *
+ * @param int    $user_id User ID.
+ * @param string $type    Verification type ('veteran' or 'military').
+ * @return int Remaining lockout time in minutes.
+ */
+function md_get_lockout_remaining( $user_id, $type ) {
+	$lockout_until = get_user_meta( $user_id, '_md_' . $type . '_lockout_until', true );
+
+	if ( ! $lockout_until || time() >= $lockout_until ) {
+		return 0;
+	}
+
+	$remaining_seconds = $lockout_until - time();
+	return ceil( $remaining_seconds / 60 );
+}
+
+/**
+ * Set lockout for user.
+ *
+ * @param int    $user_id  User ID.
+ * @param string $type     Verification type ('veteran' or 'military').
+ * @param int    $duration Lockout duration in minutes.
+ */
+function md_set_lockout( $user_id, $type, $duration ) {
+	$lockout_until = time() + ( $duration * 60 );
+	update_user_meta( $user_id, '_md_' . $type . '_lockout_until', $lockout_until );
+	
+	// Send lockout notification email if enabled
+	$security_settings = md_get_security_settings();
+	if ( $security_settings['send_lockout_notification'] ) {
+		md_send_lockout_notification( $user_id, $type, $duration );
+	}
+}
+
+/**
+ * Send lockout notification email.
+ *
+ * @param int    $user_id           User ID.
+ * @param string $verification_type Verification type.
+ * @param int    $lockout_duration  Lockout duration in minutes.
+ */
+function md_send_lockout_notification( $user_id, $verification_type, $lockout_duration ) {
+	// Try to use WooCommerce email if available
+	if ( function_exists( 'WC' ) && WC()->mailer() ) {
+		$emails = WC()->mailer()->get_emails();
+		
+		if ( isset( $emails['MD_Email_Lockout'] ) ) {
+			$emails['MD_Email_Lockout']->trigger( $user_id, $verification_type, $lockout_duration );
+		}
+	}
+}
