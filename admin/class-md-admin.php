@@ -122,6 +122,7 @@ class MD_Admin {
 			'queue'        => __( 'Queue', 'military-discounts' ),
 			'security'     => __( 'Verification Security', 'military-discounts' ),
 			'form-builder' => __( 'Form Builder', 'military-discounts' ),
+			'form-text'    => __( 'Form Text', 'military-discounts' ),
 			'logs'         => __( 'VA API Logs', 'military-discounts' ),
 		);
 
@@ -165,6 +166,9 @@ class MD_Admin {
 						break;
 					case 'form-builder':
 						$this->render_form_builder_tab();
+						break;
+					case 'form-text':
+						$this->render_form_text_tab();
 						break;
 					case 'logs':
 						$this->render_logs_tab();
@@ -317,6 +321,21 @@ class MD_Admin {
 	private function render_form_builder_tab() {
 		$form_builder = new MD_Form_Builder();
 		$form_builder->render_builder();
+	}
+
+	/**
+	 * Render form text customization tab.
+	 */
+	private function render_form_text_tab() {
+		?>
+		<form method="post" action="options.php">
+			<?php
+			settings_fields( 'md_settings_form_text' );
+			do_settings_sections( 'md-settings-form-text' );
+			submit_button();
+			?>
+		</form>
+		<?php
 	}
 
 	/**

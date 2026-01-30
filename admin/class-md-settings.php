@@ -54,6 +54,796 @@ class MD_Settings {
 		$this->register_queue_settings();
 		$this->register_logs_settings();
 		$this->register_security_settings();
+		$this->register_form_text_settings();
+	}
+
+	/**
+	 * Register form text customization settings.
+	 */
+	private function register_form_text_settings() {
+		register_setting(
+			'md_settings_form_text',
+			'md_settings_form_text',
+			array(
+				'sanitize_callback' => array( $this, 'sanitize_form_text_settings' ),
+			)
+		);
+
+		add_settings_section(
+			'md_form_text_section',
+			__( 'Form Text Customization', 'military-discounts' ),
+			array( $this, 'render_form_text_section' ),
+			'md-settings-form-text'
+		);
+
+		// Page Header
+		add_settings_field(
+			'page_subtitle',
+			__( 'Page Subtitle', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'page_subtitle',
+				'description' => __( 'Subtitle text for the Military Discounts page.', 'military-discounts' ),
+				'default'     => __( 'Verify your veteran or active military status to access exclusive discounts.', 'military-discounts' ),
+			)
+		);
+
+		// Verified Status
+		add_settings_field(
+			'verified_veteran_title',
+			__( 'Verified Veteran Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'verified_veteran_title',
+				'description' => __( 'Title for verified veteran status.', 'military-discounts' ),
+				'default'     => __( 'Veteran Status Verified', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'verified_military_title',
+			__( 'Verified Military Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'verified_military_title',
+				'description' => __( 'Title for verified active military status.', 'military-discounts' ),
+				'default'     => __( 'Active Military Status Verified', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'verified_valid_until',
+			__( 'Valid Until Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'verified_valid_until',
+				'description' => __( 'Text for "Valid until" date display.', 'military-discounts' ),
+				'default'     => __( 'Valid until %s', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'verified_no_expiration',
+			__( 'No Expiration Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'verified_no_expiration',
+				'description' => __( 'Text for "No expiration" display.', 'military-discounts' ),
+				'default'     => __( 'No expiration', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'verified_note',
+			__( 'Verified Note', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'verified_note',
+				'description' => __( 'Note text displayed when user is verified.', 'military-discounts' ),
+				'default'     => __( 'You are eligible for military discounts on applicable products and coupons.', 'military-discounts' ),
+			)
+		);
+
+		// Pending Status
+		add_settings_field(
+			'pending_title',
+			__( 'Pending Status Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'pending_title',
+				'description' => __( 'Title for pending verification status.', 'military-discounts' ),
+				'default'     => __( 'Verification Pending', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'pending_description',
+			__( 'Pending Status Description', 'military-discounts' ),
+			array( $this, 'render_textarea_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'pending_description',
+				'description' => __( 'Description text for pending verification status.', 'military-discounts' ),
+				'default'     => __( 'Your verification request has been submitted and is being processed. You will receive an email notification once complete.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'pending_type_label',
+			__( 'Pending Type Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'pending_type_label',
+				'description' => __( 'Label for verification type in pending status.', 'military-discounts' ),
+				'default'     => __( 'Type:', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'pending_submitted_label',
+			__( 'Pending Submitted Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'pending_submitted_label',
+				'description' => __( 'Label for submission date in pending status.', 'military-discounts' ),
+				'default'     => __( 'Submitted:', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'pending_status_label',
+			__( 'Pending Status Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'pending_status_label',
+				'description' => __( 'Label for status in pending status.', 'military-discounts' ),
+				'default'     => __( 'Status:', 'military-discounts' ),
+			)
+		);
+
+		// Lockout Status
+		add_settings_field(
+			'lockout_title',
+			__( 'Lockout Status Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'lockout_title',
+				'description' => __( 'Title for locked out status.', 'military-discounts' ),
+				'default'     => __( 'Verification Locked', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'lockout_description',
+			__( 'Lockout Status Description', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'lockout_description',
+				'description' => __( 'Description text for locked out status. Use %s for verification type and %d for minutes.', 'military-discounts' ),
+				'default'     => __( 'Too many failed %s verification attempts. Please try again in %d minutes.', 'military-discounts' ),
+			)
+		);
+
+		// Failed Attempts
+		add_settings_field(
+			'failed_veteran_text',
+			__( 'Veteran Failed Attempts Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'failed_veteran_text',
+				'description' => __( 'Text for veteran failed attempts. Use %d for count and max.', 'military-discounts' ),
+				'default'     => __( 'Veteran verification: %d/%d failed attempts', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'failed_military_text',
+			__( 'Military Failed Attempts Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'failed_military_text',
+				'description' => __( 'Text for military failed attempts. Use %d for count and max.', 'military-discounts' ),
+				'default'     => __( 'Military verification: %d/%d failed attempts', 'military-discounts' ),
+			)
+		);
+
+		// Step 1: Type Selection
+		add_settings_field(
+			'step1_title',
+			__( 'Step 1 Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step1_title',
+				'description' => __( 'Title for step 1 (Select Type).', 'military-discounts' ),
+				'default'     => __( 'Select Verification Type', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'veteran_radio_label',
+			__( 'Veteran Radio Button Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'veteran_radio_label',
+				'description' => __( 'Label for veteran radio button.', 'military-discounts' ),
+				'default'     => __( 'I am a Veteran', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'veteran_radio_desc',
+			__( 'Veteran Radio Button Description', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'veteran_radio_desc',
+				'description' => __( 'Description for veteran radio button.', 'military-discounts' ),
+				'default'     => __( 'Verify through VA records', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'military_radio_label',
+			__( 'Military Radio Button Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'military_radio_label',
+				'description' => __( 'Label for active military radio button.', 'military-discounts' ),
+				'default'     => __( 'I am Active Military', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'military_radio_desc',
+			__( 'Military Radio Button Description', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'military_radio_desc',
+				'description' => __( 'Description for active military radio button.', 'military-discounts' ),
+				'default'     => __( 'Verify with .mil email', 'military-discounts' ),
+			)
+		);
+
+		// Step Labels
+		add_settings_field(
+			'step1_label',
+			__( 'Step 1 Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step1_label',
+				'description' => __( 'Label for step 1 in the progress indicator.', 'military-discounts' ),
+				'default'     => __( 'Select Type', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step2_label',
+			__( 'Step 2 Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step2_label',
+				'description' => __( 'Label for step 2 in the progress indicator.', 'military-discounts' ),
+				'default'     => __( 'Enter Info', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step3_label',
+			__( 'Step 3 Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_label',
+				'description' => __( 'Label for step 3 in the progress indicator.', 'military-discounts' ),
+				'default'     => __( 'Submit', 'military-discounts' ),
+			)
+		);
+
+		// Step 2: Enter Information
+		add_settings_field(
+			'step2_veteran_title',
+			__( 'Step 2 Veteran Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step2_veteran_title',
+				'description' => __( 'Title for step 2 when veteran type is selected.', 'military-discounts' ),
+				'default'     => __( 'Enter Your Information', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step2_military_title',
+			__( 'Step 2 Military Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step2_military_title',
+				'description' => __( 'Title for step 2 when military type is selected.', 'military-discounts' ),
+				'default'     => __( 'Enter Your Military Email', 'military-discounts' ),
+			)
+		);
+
+		// Step 3: Veteran Confirmation
+		add_settings_field(
+			'step3_veteran_title',
+			__( 'Step 3 Veteran Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_veteran_title',
+				'description' => __( 'Title for step 3 when veteran type is selected.', 'military-discounts' ),
+				'default'     => __( 'Confirm Your Information', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step3_veteran_desc',
+			__( 'Step 3 Veteran Description', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_veteran_desc',
+				'description' => __( 'Description for step 3 when veteran type is selected.', 'military-discounts' ),
+				'default'     => __( 'Please review your information before submitting.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step3_verification_details',
+			__( 'Verification Details Label', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_verification_details',
+				'description' => __( 'Label for verification details section.', 'military-discounts' ),
+				'default'     => __( 'Verification Details', 'military-discounts' ),
+			)
+		);
+
+		// Step 3: Military OTP
+		add_settings_field(
+			'step3_military_title',
+			__( 'Step 3 Military Title', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_military_title',
+				'description' => __( 'Title for step 3 when military type is selected.', 'military-discounts' ),
+				'default'     => __( 'Verify Your Military Email', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step3_military_desc',
+			__( 'Step 3 Military Description', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_military_desc',
+				'description' => __( 'Description for step 3 when military type is selected.', 'military-discounts' ),
+				'default'     => __( 'We\'ll send a verification code to:', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step3_resend_link',
+			__( 'Resend Code Link Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_resend_link',
+				'description' => __( 'Text for the resend code link.', 'military-discounts' ),
+				'default'     => __( 'Resend code', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step3_otp_placeholder',
+			__( 'OTP Input Placeholder', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_otp_placeholder',
+				'description' => __( 'Placeholder for OTP input field.', 'military-discounts' ),
+				'default'     => __( '000000', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'step3_otp_validation',
+			__( 'OTP Validation Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'step3_otp_validation',
+				'description' => __( 'Message for OTP validation.', 'military-discounts' ),
+				'default'     => __( 'Please enter a 6-digit code.', 'military-discounts' ),
+			)
+		);
+
+		// Buttons and Actions
+		add_settings_field(
+			'button_back',
+			__( 'Back Button Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'button_back',
+				'description' => __( 'Text for back buttons.', 'military-discounts' ),
+				'default'     => __( 'Back', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'button_next',
+			__( 'Next Button Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'button_next',
+				'description' => __( 'Text for next buttons.', 'military-discounts' ),
+				'default'     => __( 'Next', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'button_submit',
+			__( 'Submit Button Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'button_submit',
+				'description' => __( 'Text for submit buttons.', 'military-discounts' ),
+				'default'     => __( 'Submit', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'button_verify_code',
+			__( 'Verify Code Button Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'button_verify_code',
+				'description' => __( 'Text for verify code button.', 'military-discounts' ),
+				'default'     => __( 'Verify Code', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'button_resend_code',
+			__( 'Resend Code Button Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'button_resend_code',
+				'description' => __( 'Text for resend code button.', 'military-discounts' ),
+				'default'     => __( 'Resend Code', 'military-discounts' ),
+			)
+		);
+
+		// Form Fields
+		add_settings_field(
+			'select_placeholder',
+			__( 'Select Placeholder', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'select_placeholder',
+				'description' => __( 'Placeholder text for select dropdowns.', 'military-discounts' ),
+				'default'     => __( 'Select...', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'select_state_placeholder',
+			__( 'State Select Placeholder', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'select_state_placeholder',
+				'description' => __( 'Placeholder text for state dropdown.', 'military-discounts' ),
+				'default'     => __( 'Select State...', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'select_country_placeholder',
+			__( 'Country Select Placeholder', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'select_country_placeholder',
+				'description' => __( 'Placeholder text for country dropdown.', 'military-discounts' ),
+				'default'     => __( 'Select Country...', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'select_country_us',
+			__( 'United States Option Text', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'select_country_us',
+				'description' => __( 'Text for United States country option.', 'military-discounts' ),
+				'default'     => __( 'United States', 'military-discounts' ),
+			)
+		);
+
+		// JavaScript Messages
+		add_settings_field(
+			'js_loading',
+			__( 'Loading Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_loading',
+				'description' => __( 'Loading indicator text.', 'military-discounts' ),
+				'default'     => __( 'Loading...', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_submitting',
+			__( 'Submitting Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_submitting',
+				'description' => __( 'Submitting indicator text.', 'military-discounts' ),
+				'default'     => __( 'Submitting...', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_sending_otp',
+			__( 'Sending OTP Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_sending_otp',
+				'description' => __( 'Sending OTP indicator text.', 'military-discounts' ),
+				'default'     => __( 'Sending code...', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_verifying_otp',
+			__( 'Verifying OTP Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_verifying_otp',
+				'description' => __( 'Verifying OTP indicator text.', 'military-discounts' ),
+				'default'     => __( 'Verifying...', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_error_occurred',
+			__( 'Error Occurred Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_error_occurred',
+				'description' => __( 'Generic error message.', 'military-discounts' ),
+				'default'     => __( 'An error occurred. Please try again.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_required_field',
+			__( 'Required Field Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_required_field',
+				'description' => __( 'Required field validation message.', 'military-discounts' ),
+				'default'     => __( 'This field is required.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_invalid_email',
+			__( 'Invalid Email Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_invalid_email',
+				'description' => __( 'Invalid email validation message.', 'military-discounts' ),
+				'default'     => __( 'Please enter a valid email address.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_select_type',
+			__( 'Select Type Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_select_type',
+				'description' => __( 'Message when no verification type is selected.', 'military-discounts' ),
+				'default'     => __( 'Please select a verification type.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_otp_sent',
+			__( 'OTP Sent Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_otp_sent',
+				'description' => __( 'Message when OTP is sent.', 'military-discounts' ),
+				'default'     => __( 'Verification code sent to your email.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_otp_resent',
+			__( 'OTP Resent Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_otp_resent',
+				'description' => __( 'Message when OTP is resent.', 'military-discounts' ),
+				'default'     => __( "We've sent another code to your email.", 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_redirecting',
+			__( 'Redirecting Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_redirecting',
+				'description' => __( 'Redirecting message.', 'military-discounts' ),
+				'default'     => __( 'Redirecting...', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'js_refreshing',
+			__( 'Refreshing Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-form-text',
+			'md_form_text_section',
+			array(
+				'option'      => 'md_settings_form_text',
+				'field'       => 'js_refreshing',
+				'description' => __( 'Refreshing page message.', 'military-discounts' ),
+				'default'     => __( 'Refreshing page...', 'military-discounts' ),
+			)
+		);
 	}
 
 	/**
@@ -629,6 +1419,102 @@ class MD_Settings {
 
 	public function render_security_section() {
 		echo '<p>' . esc_html__( 'Configure security settings for verification attempts.', 'military-discounts' ) . '</p>';
+	}
+
+	public function render_form_text_section() {
+		echo '<p>' . esc_html__( 'Customize all text strings displayed in the verification form and process.', 'military-discounts' ) . '</p>';
+	}
+
+	/**
+	 * Sanitize form text settings.
+	 *
+	 * @param array $input Input settings.
+	 * @return array Sanitized settings.
+	 */
+	public function sanitize_form_text_settings( $input ) {
+		$sanitized = array();
+
+		// Page Header
+		$sanitized['page_subtitle'] = isset( $input['page_subtitle'] ) ? sanitize_text_field( $input['page_subtitle'] ) : __( 'Verify your veteran or active military status to access exclusive discounts.', 'military-discounts' );
+
+		// Verified Status
+		$sanitized['verified_veteran_title'] = isset( $input['verified_veteran_title'] ) ? sanitize_text_field( $input['verified_veteran_title'] ) : __( 'Veteran Status Verified', 'military-discounts' );
+		$sanitized['verified_military_title'] = isset( $input['verified_military_title'] ) ? sanitize_text_field( $input['verified_military_title'] ) : __( 'Active Military Status Verified', 'military-discounts' );
+		$sanitized['verified_valid_until'] = isset( $input['verified_valid_until'] ) ? sanitize_text_field( $input['verified_valid_until'] ) : __( 'Valid until %s', 'military-discounts' );
+		$sanitized['verified_no_expiration'] = isset( $input['verified_no_expiration'] ) ? sanitize_text_field( $input['verified_no_expiration'] ) : __( 'No expiration', 'military-discounts' );
+		$sanitized['verified_note'] = isset( $input['verified_note'] ) ? sanitize_text_field( $input['verified_note'] ) : __( 'You are eligible for military discounts on applicable products and coupons.', 'military-discounts' );
+
+		// Pending Status
+		$sanitized['pending_title'] = isset( $input['pending_title'] ) ? sanitize_text_field( $input['pending_title'] ) : __( 'Verification Pending', 'military-discounts' );
+		$sanitized['pending_description'] = isset( $input['pending_description'] ) ? sanitize_textarea_field( $input['pending_description'] ) : __( 'Your verification request has been submitted and is being processed. You will receive an email notification once complete.', 'military-discounts' );
+		$sanitized['pending_type_label'] = isset( $input['pending_type_label'] ) ? sanitize_text_field( $input['pending_type_label'] ) : __( 'Type:', 'military-discounts' );
+		$sanitized['pending_submitted_label'] = isset( $input['pending_submitted_label'] ) ? sanitize_text_field( $input['pending_submitted_label'] ) : __( 'Submitted:', 'military-discounts' );
+		$sanitized['pending_status_label'] = isset( $input['pending_status_label'] ) ? sanitize_text_field( $input['pending_status_label'] ) : __( 'Status:', 'military-discounts' );
+
+		// Lockout Status
+		$sanitized['lockout_title'] = isset( $input['lockout_title'] ) ? sanitize_text_field( $input['lockout_title'] ) : __( 'Verification Locked', 'military-discounts' );
+		$sanitized['lockout_description'] = isset( $input['lockout_description'] ) ? sanitize_text_field( $input['lockout_description'] ) : __( 'Too many failed %s verification attempts. Please try again in %d minutes.', 'military-discounts' );
+
+		// Failed Attempts
+		$sanitized['failed_veteran_text'] = isset( $input['failed_veteran_text'] ) ? sanitize_text_field( $input['failed_veteran_text'] ) : __( 'Veteran verification: %d/%d failed attempts', 'military-discounts' );
+		$sanitized['failed_military_text'] = isset( $input['failed_military_text'] ) ? sanitize_text_field( $input['failed_military_text'] ) : __( 'Military verification: %d/%d failed attempts', 'military-discounts' );
+
+		// Step 1: Type Selection
+		$sanitized['step1_title'] = isset( $input['step1_title'] ) ? sanitize_text_field( $input['step1_title'] ) : __( 'Select Verification Type', 'military-discounts' );
+		$sanitized['veteran_radio_label'] = isset( $input['veteran_radio_label'] ) ? sanitize_text_field( $input['veteran_radio_label'] ) : __( 'I am a Veteran', 'military-discounts' );
+		$sanitized['veteran_radio_desc'] = isset( $input['veteran_radio_desc'] ) ? sanitize_text_field( $input['veteran_radio_desc'] ) : __( 'Verify through VA records', 'military-discounts' );
+		$sanitized['military_radio_label'] = isset( $input['military_radio_label'] ) ? sanitize_text_field( $input['military_radio_label'] ) : __( 'I am Active Military', 'military-discounts' );
+		$sanitized['military_radio_desc'] = isset( $input['military_radio_desc'] ) ? sanitize_text_field( $input['military_radio_desc'] ) : __( 'Verify with .mil email', 'military-discounts' );
+
+		// Step Labels
+		$sanitized['step1_label'] = isset( $input['step1_label'] ) ? sanitize_text_field( $input['step1_label'] ) : __( 'Select Type', 'military-discounts' );
+		$sanitized['step2_label'] = isset( $input['step2_label'] ) ? sanitize_text_field( $input['step2_label'] ) : __( 'Enter Info', 'military-discounts' );
+		$sanitized['step3_label'] = isset( $input['step3_label'] ) ? sanitize_text_field( $input['step3_label'] ) : __( 'Submit', 'military-discounts' );
+
+		// Step 2: Enter Information
+		$sanitized['step2_veteran_title'] = isset( $input['step2_veteran_title'] ) ? sanitize_text_field( $input['step2_veteran_title'] ) : __( 'Enter Your Information', 'military-discounts' );
+		$sanitized['step2_military_title'] = isset( $input['step2_military_title'] ) ? sanitize_text_field( $input['step2_military_title'] ) : __( 'Enter Your Military Email', 'military-discounts' );
+
+		// Step 3: Veteran Confirmation
+		$sanitized['step3_veteran_title'] = isset( $input['step3_veteran_title'] ) ? sanitize_text_field( $input['step3_veteran_title'] ) : __( 'Confirm Your Information', 'military-discounts' );
+		$sanitized['step3_veteran_desc'] = isset( $input['step3_veteran_desc'] ) ? sanitize_text_field( $input['step3_veteran_desc'] ) : __( 'Please review your information before submitting.', 'military-discounts' );
+		$sanitized['step3_verification_details'] = isset( $input['step3_verification_details'] ) ? sanitize_text_field( $input['step3_verification_details'] ) : __( 'Verification Details', 'military-discounts' );
+
+		// Step 3: Military OTP
+		$sanitized['step3_military_title'] = isset( $input['step3_military_title'] ) ? sanitize_text_field( $input['step3_military_title'] ) : __( 'Verify Your Military Email', 'military-discounts' );
+		$sanitized['step3_military_desc'] = isset( $input['step3_military_desc'] ) ? sanitize_text_field( $input['step3_military_desc'] ) : __( 'We\'ll send a verification code to:', 'military-discounts' );
+		$sanitized['step3_resend_link'] = isset( $input['step3_resend_link'] ) ? sanitize_text_field( $input['step3_resend_link'] ) : __( 'Resend code', 'military-discounts' );
+		$sanitized['step3_otp_placeholder'] = isset( $input['step3_otp_placeholder'] ) ? sanitize_text_field( $input['step3_otp_placeholder'] ) : __( '000000', 'military-discounts' );
+		$sanitized['step3_otp_validation'] = isset( $input['step3_otp_validation'] ) ? sanitize_text_field( $input['step3_otp_validation'] ) : __( 'Please enter a 6-digit code.', 'military-discounts' );
+
+		// Buttons and Actions
+		$sanitized['button_back'] = isset( $input['button_back'] ) ? sanitize_text_field( $input['button_back'] ) : __( 'Back', 'military-discounts' );
+		$sanitized['button_next'] = isset( $input['button_next'] ) ? sanitize_text_field( $input['button_next'] ) : __( 'Next', 'military-discounts' );
+		$sanitized['button_submit'] = isset( $input['button_submit'] ) ? sanitize_text_field( $input['button_submit'] ) : __( 'Submit', 'military-discounts' );
+		$sanitized['button_verify_code'] = isset( $input['button_verify_code'] ) ? sanitize_text_field( $input['button_verify_code'] ) : __( 'Verify Code', 'military-discounts' );
+		$sanitized['button_resend_code'] = isset( $input['button_resend_code'] ) ? sanitize_text_field( $input['button_resend_code'] ) : __( 'Resend Code', 'military-discounts' );
+
+		// Form Fields
+		$sanitized['select_placeholder'] = isset( $input['select_placeholder'] ) ? sanitize_text_field( $input['select_placeholder'] ) : __( 'Select...', 'military-discounts' );
+		$sanitized['select_state_placeholder'] = isset( $input['select_state_placeholder'] ) ? sanitize_text_field( $input['select_state_placeholder'] ) : __( 'Select State...', 'military-discounts' );
+		$sanitized['select_country_placeholder'] = isset( $input['select_country_placeholder'] ) ? sanitize_text_field( $input['select_country_placeholder'] ) : __( 'Select Country...', 'military-discounts' );
+		$sanitized['select_country_us'] = isset( $input['select_country_us'] ) ? sanitize_text_field( $input['select_country_us'] ) : __( 'United States', 'military-discounts' );
+
+		// JavaScript Messages
+		$sanitized['js_loading'] = isset( $input['js_loading'] ) ? sanitize_text_field( $input['js_loading'] ) : __( 'Loading...', 'military-discounts' );
+		$sanitized['js_submitting'] = isset( $input['js_submitting'] ) ? sanitize_text_field( $input['js_submitting'] ) : __( 'Submitting...', 'military-discounts' );
+		$sanitized['js_sending_otp'] = isset( $input['js_sending_otp'] ) ? sanitize_text_field( $input['js_sending_otp'] ) : __( 'Sending code...', 'military-discounts' );
+		$sanitized['js_verifying_otp'] = isset( $input['js_verifying_otp'] ) ? sanitize_text_field( $input['js_verifying_otp'] ) : __( 'Verifying...', 'military-discounts' );
+		$sanitized['js_error_occurred'] = isset( $input['js_error_occurred'] ) ? sanitize_text_field( $input['js_error_occurred'] ) : __( 'An error occurred. Please try again.', 'military-discounts' );
+		$sanitized['js_required_field'] = isset( $input['js_required_field'] ) ? sanitize_text_field( $input['js_required_field'] ) : __( 'This field is required.', 'military-discounts' );
+		$sanitized['js_invalid_email'] = isset( $input['js_invalid_email'] ) ? sanitize_text_field( $input['js_invalid_email'] ) : __( 'Please enter a valid email address.', 'military-discounts' );
+		$sanitized['js_select_type'] = isset( $input['js_select_type'] ) ? sanitize_text_field( $input['js_select_type'] ) : __( 'Please select a verification type.', 'military-discounts' );
+		$sanitized['js_otp_sent'] = isset( $input['js_otp_sent'] ) ? sanitize_text_field( $input['js_otp_sent'] ) : __( 'Verification code sent to your email.', 'military-discounts' );
+		$sanitized['js_otp_resent'] = isset( $input['js_otp_resent'] ) ? sanitize_text_field( $input['js_otp_resent'] ) : __( "We've sent another code to your email.", 'military-discounts' );
+		$sanitized['js_redirecting'] = isset( $input['js_redirecting'] ) ? sanitize_text_field( $input['js_redirecting'] ) : __( 'Redirecting...', 'military-discounts' );
+		$sanitized['js_refreshing'] = isset( $input['js_refreshing'] ) ? sanitize_text_field( $input['js_refreshing'] ) : __( 'Refreshing page...', 'military-discounts' );
+
+		return $sanitized;
 	}
 
 	/**

@@ -116,6 +116,8 @@ class MD_Public {
 			true
 		);
 
+		$form_text_settings = md_get_form_text_settings();
+
 		wp_localize_script(
 			'md-public',
 			'mdPublic',
@@ -123,21 +125,85 @@ class MD_Public {
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'md_public_nonce' ),
 				'strings' => array(
-					'loading'         => __( 'Loading...', 'military-discounts' ),
-					'submitting'      => __( 'Submitting...', 'military-discounts' ),
-					'sendingOtp'      => __( 'Sending code...', 'military-discounts' ),
-					'verifyingOtp'    => __( 'Verifying...', 'military-discounts' ),
-					'errorOccurred'   => __( 'An error occurred. Please try again.', 'military-discounts' ),
-					'requiredField'   => __( 'This field is required.', 'military-discounts' ),
-					'invalidEmail'    => __( 'Please enter a valid email address.', 'military-discounts' ),
-					'otpSent'         => __( 'Verification code sent to your email.', 'military-discounts' ),
-					'otpResent'       => __( "We've sent another code to your email.", 'military-discounts' ),
-					'selectType'      => __( 'Please select a verification type.', 'military-discounts' ),
-					'back'            => __( 'Back', 'military-discounts' ),
-					'next'            => __( 'Next', 'military-discounts' ),
-					'submit'          => __( 'Submit', 'military-discounts' ),
-					'verifyCode'      => __( 'Verify Code', 'military-discounts' ),
-					'resendCode'      => __( 'Resend Code', 'military-discounts' ),
+					// Page Header
+					'pageSubtitle' => $form_text_settings['page_subtitle'],
+
+					// Verified Status
+					'verifiedVeteranTitle' => $form_text_settings['verified_veteran_title'],
+					'verifiedMilitaryTitle' => $form_text_settings['verified_military_title'],
+					'verifiedValidUntil' => $form_text_settings['verified_valid_until'],
+					'verifiedNoExpiration' => $form_text_settings['verified_no_expiration'],
+					'verifiedNote' => $form_text_settings['verified_note'],
+
+					// Pending Status
+					'pendingTitle' => $form_text_settings['pending_title'],
+					'pendingDescription' => $form_text_settings['pending_description'],
+					'pendingTypeLabel' => $form_text_settings['pending_type_label'],
+					'pendingSubmittedLabel' => $form_text_settings['pending_submitted_label'],
+					'pendingStatusLabel' => $form_text_settings['pending_status_label'],
+
+					// Lockout Status
+					'lockoutTitle' => $form_text_settings['lockout_title'],
+					'lockoutDescription' => $form_text_settings['lockout_description'],
+
+					// Failed Attempts
+					'failedVeteranText' => $form_text_settings['failed_veteran_text'],
+					'failedMilitaryText' => $form_text_settings['failed_military_text'],
+
+					// Step 1: Type Selection
+					'step1Title' => $form_text_settings['step1_title'],
+					'veteranRadioLabel' => $form_text_settings['veteran_radio_label'],
+					'veteranRadioDesc' => $form_text_settings['veteran_radio_desc'],
+					'militaryRadioLabel' => $form_text_settings['military_radio_label'],
+					'militaryRadioDesc' => $form_text_settings['military_radio_desc'],
+
+					// Step Labels
+					'step1Label' => $form_text_settings['step1_label'],
+					'step2Label' => $form_text_settings['step2_label'],
+					'step3Label' => $form_text_settings['step3_label'],
+
+					// Step 2: Enter Information
+					'step2VeteranTitle' => $form_text_settings['step2_veteran_title'],
+					'step2MilitaryTitle' => $form_text_settings['step2_military_title'],
+
+					// Step 3: Veteran Confirmation
+					'step3VeteranTitle' => $form_text_settings['step3_veteran_title'],
+					'step3VeteranDesc' => $form_text_settings['step3_veteran_desc'],
+					'step3VerificationDetails' => $form_text_settings['step3_verification_details'],
+
+					// Step 3: Military OTP
+					'step3MilitaryTitle' => $form_text_settings['step3_military_title'],
+					'step3MilitaryDesc' => $form_text_settings['step3_military_desc'],
+					'step3ResendLink' => $form_text_settings['step3_resend_link'],
+					'step3OtpPlaceholder' => $form_text_settings['step3_otp_placeholder'],
+					'step3OtpValidation' => $form_text_settings['step3_otp_validation'],
+
+					// Buttons and Actions
+					'buttonBack' => $form_text_settings['button_back'],
+					'buttonNext' => $form_text_settings['button_next'],
+					'buttonSubmit' => $form_text_settings['button_submit'],
+					'buttonVerifyCode' => $form_text_settings['button_verify_code'],
+					'buttonResendCode' => $form_text_settings['button_resend_code'],
+
+					// Form Fields
+					'selectPlaceholder' => $form_text_settings['select_placeholder'],
+					'selectStatePlaceholder' => $form_text_settings['select_state_placeholder'],
+					'selectCountryPlaceholder' => $form_text_settings['select_country_placeholder'],
+					'selectCountryUs' => $form_text_settings['select_country_us'],
+
+					// JavaScript Messages
+					'loading' => $form_text_settings['js_loading'],
+					'submitting' => $form_text_settings['js_submitting'],
+					'sendingOtp' => $form_text_settings['js_sending_otp'],
+					'verifyingOtp' => $form_text_settings['js_verifying_otp'],
+					'errorOccurred' => $form_text_settings['js_error_occurred'],
+					'requiredField' => $form_text_settings['js_required_field'],
+					'invalidEmail' => $form_text_settings['js_invalid_email'],
+					'selectType' => $form_text_settings['js_select_type'],
+					'otpSent' => $form_text_settings['js_otp_sent'],
+					'otpResent' => $form_text_settings['js_otp_resent'],
+					'redirecting' => $form_text_settings['js_redirecting'],
+					'refreshing' => $form_text_settings['js_refreshing'],
 				),
 			)
 		);

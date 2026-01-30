@@ -210,6 +210,7 @@ class MD_Ajax {
 	 * @param string $type   Verification type.
 	 */
 	private function render_form_fields( array $fields, $type ) {
+		$form_text_settings = md_get_form_text_settings();
 		foreach ( $fields as $field ) {
 			$is_required = ! empty( $field['required'] );
 			$required_mark = $is_required ? '<span class="required">*</span>' : '';
@@ -245,7 +246,7 @@ class MD_Ajax {
 							name="<?php echo esc_attr( $field['id'] ); ?>"
 							class="input-select"
 							<?php echo $is_required ? 'required' : ''; ?>>
-							<option value=""><?php esc_html_e( 'Select...', 'military-discounts' ); ?></option>
+							<option value=""><?php echo esc_html( $form_text_settings['select_placeholder'] ); ?></option>
 							<?php if ( ! empty( $field['options'] ) ) : ?>
 								<?php foreach ( $field['options'] as $value => $label ) : ?>
 									<option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $label ); ?></option>
@@ -291,12 +292,13 @@ class MD_Ajax {
 	private function render_state_select( array $field ) {
 		$states = WC()->countries->get_states( 'US' );
 		$is_required = ! empty( $field['required'] );
+		$form_text_settings = md_get_form_text_settings();
 		?>
 		<select id="md-<?php echo esc_attr( $field['id'] ); ?>"
 			name="<?php echo esc_attr( $field['id'] ); ?>"
 			class="input-select"
 			<?php echo $is_required ? 'required' : ''; ?>>
-			<option value=""><?php esc_html_e( 'Select State...', 'military-discounts' ); ?></option>
+			<option value=""><?php echo esc_html( $form_text_settings['select_state_placeholder'] ); ?></option>
 			<?php foreach ( $states as $code => $name ) : ?>
 				<option value="<?php echo esc_attr( $code ); ?>"><?php echo esc_html( $name ); ?></option>
 			<?php endforeach; ?>
@@ -312,13 +314,14 @@ class MD_Ajax {
 	private function render_country_select( array $field ) {
 		$countries = WC()->countries->get_countries();
 		$is_required = ! empty( $field['required'] );
+		$form_text_settings = md_get_form_text_settings();
 		?>
 		<select id="md-<?php echo esc_attr( $field['id'] ); ?>"
 			name="<?php echo esc_attr( $field['id'] ); ?>"
 			class="input-select"
 			<?php echo $is_required ? 'required' : ''; ?>>
-			<option value=""><?php esc_html_e( 'Select Country...', 'military-discounts' ); ?></option>
-			<option value="USA" selected><?php esc_html_e( 'United States', 'military-discounts' ); ?></option>
+			<option value=""><?php echo esc_html( $form_text_settings['select_country_placeholder'] ); ?></option>
+			<option value="USA" selected><?php echo esc_html( $form_text_settings['select_country_us'] ); ?></option>
 			<?php foreach ( $countries as $code => $name ) : ?>
 				<?php if ( 'US' !== $code ) : ?>
 					<option value="<?php echo esc_attr( $code ); ?>"><?php echo esc_html( $name ); ?></option>

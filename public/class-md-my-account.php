@@ -143,7 +143,7 @@ class MD_My_Account {
 				$settings = md_get_general_settings();
 				echo esc_html( ! empty( $settings['page_title'] ) ? $settings['page_title'] : __( 'Military Discounts', 'military-discounts' ) ); 
 			?></h2>
-			<p><?php esc_html_e( 'Verify your veteran or active military status to access exclusive discounts.', 'military-discounts' ); ?></p>
+			<p><?php echo esc_html( md_get_form_text_settings()['page_subtitle'] ); ?></p>
 
 			<?php if ( $status['is_veteran'] || $status['is_military'] ) : ?>
 				<!-- Verified Status -->
@@ -165,6 +165,7 @@ class MD_My_Account {
 	 * @param array $status Verification status.
 	 */
 	private function render_verified_status( array $status ) {
+		$form_text_settings = md_get_form_text_settings();
 		?>
 		<div class="md-status md-status-verified">
 			<div class="md-status-icon">
@@ -172,34 +173,32 @@ class MD_My_Account {
 			</div>
 			<div class="md-status-content">
 				<?php if ( $status['is_veteran'] ) : ?>
-					<h3><?php esc_html_e( 'Veteran Status Verified', 'military-discounts' ); ?></h3>
+					<h3><?php echo esc_html( $form_text_settings['verified_veteran_title'] ); ?></h3>
 					<p>
 						<?php
 						if ( ! empty( $status['veteran_expires_at'] ) ) {
 							printf(
-								/* translators: %s: expiry date */
-								esc_html__( 'Valid until %s', 'military-discounts' ),
+								esc_html( $form_text_settings['verified_valid_until'] ),
 								esc_html( date_i18n( get_option( 'date_format' ), $status['veteran_expires_at'] ) )
 							);
 						} else {
-							esc_html_e( 'No expiration', 'military-discounts' );
+							echo esc_html( $form_text_settings['verified_no_expiration'] );
 						}
 						?>
 					</p>
 				<?php endif; ?>
 
 				<?php if ( $status['is_military'] ) : ?>
-					<h3><?php esc_html_e( 'Active Military Status Verified', 'military-discounts' ); ?></h3>
+					<h3><?php echo esc_html( $form_text_settings['verified_military_title'] ); ?></h3>
 					<p>
 						<?php
 						if ( ! empty( $status['military_expires_at'] ) ) {
 							printf(
-								/* translators: %s: expiry date */
-								esc_html__( 'Valid until %s', 'military-discounts' ),
+								esc_html( $form_text_settings['verified_valid_until'] ),
 								esc_html( date_i18n( get_option( 'date_format' ), $status['military_expires_at'] ) )
 							);
 						} else {
-							esc_html_e( 'No expiration', 'military-discounts' );
+							echo esc_html( $form_text_settings['verified_no_expiration'] );
 						}
 						?>
 					</p>
@@ -208,7 +207,7 @@ class MD_My_Account {
 		</div>
 
 		<p class="md-verified-note">
-			<?php esc_html_e( 'You are eligible for military discounts on applicable products and coupons.', 'military-discounts' ); ?>
+			<?php echo esc_html( $form_text_settings['verified_note'] ); ?>
 		</p>
 		<?php
 	}
@@ -220,6 +219,7 @@ class MD_My_Account {
 		$user_id = get_current_user_id();
 		$queue   = new MD_Queue( new MD_Encryption() );
 		$pending = $queue->get_from_queue( $user_id );
+		$form_text_settings = md_get_form_text_settings();
 
 		?>
 		<div class="md-status md-status-pending">
@@ -227,20 +227,20 @@ class MD_My_Account {
 				<span class="dashicons dashicons-clock"></span>
 			</div>
 			<div class="md-status-content">
-				<h3><?php esc_html_e( 'Verification Pending', 'military-discounts' ); ?></h3>
-				<p><?php esc_html_e( 'Your verification request has been submitted and is being processed. You will receive an email notification once complete.', 'military-discounts' ); ?></p>
+				<h3><?php echo esc_html( $form_text_settings['pending_title'] ); ?></h3>
+				<p><?php echo esc_html( $form_text_settings['pending_description'] ); ?></p>
 				<?php if ( $pending ) : ?>
 					<ul class="md-pending-details">
 						<li>
-							<strong><?php esc_html_e( 'Type:', 'military-discounts' ); ?></strong>
+							<strong><?php echo esc_html( $form_text_settings['pending_type_label'] ); ?></strong>
 							<?php echo esc_html( 'veteran' === $pending['type'] ? __( 'Veteran', 'military-discounts' ) : __( 'Active Military', 'military-discounts' ) ); ?>
 						</li>
 						<li>
-							<strong><?php esc_html_e( 'Submitted:', 'military-discounts' ); ?></strong>
+							<strong><?php echo esc_html( $form_text_settings['pending_submitted_label'] ); ?></strong>
 							<?php echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $pending['created_at'] ) ); ?>
 						</li>
 						<li>
-							<strong><?php esc_html_e( 'Status:', 'military-discounts' ); ?></strong>
+							<strong><?php echo esc_html( $form_text_settings['pending_status_label'] ); ?></strong>
 							<?php echo esc_html( ucfirst( $pending['status'] ) ); ?>
 						</li>
 					</ul>
@@ -290,8 +290,8 @@ class MD_My_Account {
 						<span class="dashicons dashicons-lock"></span>
 					</div>
 					<div class="md-status-content">
-						<h3><?php esc_html_e( 'Verification Locked', 'military-discounts' ); ?></h3>
-						<p><?php printf( esc_html__( 'Too many failed %s verification attempts. Please try again in %d minutes.', 'military-discounts' ), $type, $remaining ); ?></p>
+						<h3><?php echo esc_html( md_get_form_text_settings()['lockout_title'] ); ?></h3>
+						<p><?php printf( esc_html( md_get_form_text_settings()['lockout_description'] ), $type, $remaining ); ?></p>
 					</div>
 				</div>
 				<?php
@@ -307,11 +307,12 @@ class MD_My_Account {
 			$failed_military = $show_military ? md_get_failed_attempts( $user_id, 'military' ) : 0;
 
 			if ( $failed_veteran > 0 || $failed_military > 0 ) {
+				$form_text_settings = md_get_form_text_settings();
 				?>
 				<div class="md-failed-attempts">
 					<?php if ( $failed_veteran > 0 ) : ?>
 						<p class="md-failed-veteran">
-							<?php printf( esc_html__( 'Veteran verification: %d/%d failed attempts', 'military-discounts' ), $failed_veteran, $security_settings['max_failed_veteran_attempts'] ); ?>
+							<?php printf( esc_html( $form_text_settings['failed_veteran_text'] ), $failed_veteran, $security_settings['max_failed_veteran_attempts'] ); ?>
 							<span class="md-attempts-bar">
 								<span class="md-attempts-progress-fill <?php echo ( $failed_veteran >= $security_settings['max_failed_veteran_attempts'] * 0.8 ) ? 'danger' : ( $failed_veteran >= $security_settings['max_failed_veteran_attempts'] * 0.5 ? 'warning' : '' ); ?>" 
 									  style="width: <?php echo ( $failed_veteran / $security_settings['max_failed_veteran_attempts'] ) * 100; ?>%;"></span>
@@ -320,7 +321,7 @@ class MD_My_Account {
 					<?php endif; ?>
 					<?php if ( $failed_military > 0 ) : ?>
 						<p class="md-failed-military">
-							<?php printf( esc_html__( 'Military verification: %d/%d failed attempts', 'military-discounts' ), $failed_military, $security_settings['max_failed_military_attempts'] ); ?>
+							<?php printf( esc_html( $form_text_settings['failed_military_text'] ), $failed_military, $security_settings['max_failed_military_attempts'] ); ?>
 							<span class="md-attempts-bar">
 								<span class="md-attempts-progress-fill <?php echo ( $failed_military >= $security_settings['max_failed_military_attempts'] * 0.8 ) ? 'danger' : ( $failed_military >= $security_settings['max_failed_military_attempts'] * 0.5 ? 'warning' : '' ); ?>" 
 									  style="width: <?php echo ( $failed_military / $security_settings['max_failed_military_attempts'] ) * 100; ?>%;"></span>
@@ -336,23 +337,25 @@ class MD_My_Account {
 		<div class="md-form-wrapper" id="md-verification-form">
 			<!-- Step Indicator -->
 			<div class="md-steps">
+				<?php $form_text_settings = md_get_form_text_settings(); ?>
 				<div class="md-step active" data-step="1">
 					<span class="md-step-number">1</span>
-					<span class="md-step-label"><?php esc_html_e( 'Select Type', 'military-discounts' ); ?></span>
+					<span class="md-step-label"><?php echo esc_html( $form_text_settings['step1_label'] ); ?></span>
 				</div>
 				<div class="md-step" data-step="2">
 					<span class="md-step-number">2</span>
-					<span class="md-step-label"><?php esc_html_e( 'Enter Info', 'military-discounts' ); ?></span>
+					<span class="md-step-label"><?php echo esc_html( $form_text_settings['step2_label'] ); ?></span>
 				</div>
 				<div class="md-step" data-step="3">
 					<span class="md-step-number">3</span>
-					<span class="md-step-label"><?php esc_html_e( 'Submit', 'military-discounts' ); ?></span>
+					<span class="md-step-label"><?php echo esc_html( $form_text_settings['step3_label'] ); ?></span>
 				</div>
 			</div>
 
 			<!-- Step 1: Select Type -->
 			<div class="md-form-step active" data-step="1">
-				<h3><?php esc_html_e( 'Select Verification Type', 'military-discounts' ); ?></h3>
+				<?php $form_text_settings = md_get_form_text_settings(); ?>
+				<h3><?php echo esc_html( $form_text_settings['step1_title'] ); ?></h3>
 
 				<div class="md-type-options">
 					<?php if ( $show_veteran ) : ?>
@@ -360,8 +363,8 @@ class MD_My_Account {
 							<input type="radio" name="verification_type" value="veteran">
 							<span class="md-type-card">
 								<span class="md-type-icon">🎖️</span>
-								<span class="md-type-title"><?php esc_html_e( 'I am a Veteran', 'military-discounts' ); ?></span>
-								<span class="md-type-desc"><?php esc_html_e( 'Verify through VA records', 'military-discounts' ); ?></span>
+								<span class="md-type-title"><?php echo esc_html( $form_text_settings['veteran_radio_label'] ); ?></span>
+								<span class="md-type-desc"><?php echo esc_html( $form_text_settings['veteran_radio_desc'] ); ?></span>
 							</span>
 						</label>
 					<?php endif; ?>
@@ -371,8 +374,8 @@ class MD_My_Account {
 							<input type="radio" name="verification_type" value="military">
 							<span class="md-type-card">
 								<span class="md-type-icon">🪖</span>
-								<span class="md-type-title"><?php esc_html_e( 'I am Active Military', 'military-discounts' ); ?></span>
-								<span class="md-type-desc"><?php esc_html_e( 'Verify with .mil email', 'military-discounts' ); ?></span>
+								<span class="md-type-title"><?php echo esc_html( $form_text_settings['military_radio_label'] ); ?></span>
+								<span class="md-type-desc"><?php echo esc_html( $form_text_settings['military_radio_desc'] ); ?></span>
 							</span>
 						</label>
 					<?php endif; ?>
@@ -380,7 +383,7 @@ class MD_My_Account {
 
 				<div class="md-form-actions">
 					<button type="button" class="button button-primary wp-element-button md-next-step" disabled>
-						<?php esc_html_e( 'Next', 'military-discounts' ); ?>
+						<?php echo esc_html( md_get_form_text_settings()['button_next'] ); ?>
 					</button>
 				</div>
 			</div>
@@ -395,10 +398,10 @@ class MD_My_Account {
 
 				<div class="md-form-actions">
 					<button type="button" class="button wp-element-button md-prev-step">
-						<?php esc_html_e( 'Back', 'military-discounts' ); ?>
+						<?php echo esc_html( md_get_form_text_settings()['button_back'] ); ?>
 					</button>
 					<button type="button" class="button button-primary wp-element-button md-next-step">
-						<?php esc_html_e( 'Next', 'military-discounts' ); ?>
+						<?php echo esc_html( md_get_form_text_settings()['button_next'] ); ?>
 					</button>
 				</div>
 			</div>

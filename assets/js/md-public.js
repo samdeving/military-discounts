@@ -84,10 +84,10 @@
                     $fields.html(response.data.html);
                     formFields = response.data.fields;
 
-                    // Update title
-                    var title = verificationType === 'veteran'
-                        ? 'Enter Your Information'
-                        : 'Enter Your Military Email';
+        // Update title
+                var title = verificationType === 'veteran'
+                        ? mdPublic.strings.step2VeteranTitle
+                        : mdPublic.strings.step2MilitaryTitle;
                     $('.md-form-step[data-step="2"] .md-step-title').text(title);
 
                     goToStep(2);
@@ -220,10 +220,10 @@
         var formData = getFormData();
 
         var html = '<div class="md-confirmation">';
-        html += '<h3>Confirm Your Information</h3>';
-        html += '<p>Please review your information before submitting.</p>';
+        html += '<h3>' + mdPublic.strings.step3VeteranTitle + '</h3>';
+        html += '<p>' + mdPublic.strings.step3VeteranDesc + '</p>';
         html += '<div class="md-confirmation-summary">';
-        html += '<h4>Verification Details</h4>';
+        html += '<h4>' + mdPublic.strings.step3VerificationDetails + '</h4>';
         html += '<dl>';
 
         for (var key in formData) {
@@ -237,8 +237,8 @@
         html += '</dl>';
         html += '</div>';
          html += '<div class="md-form-actions">';
-         html += '<button type="button" class="button wp-element-button md-prev-step">' + mdPublic.strings.back + '</button>';
-         html += '<button type="button" class="button button-primary wp-element-button md-submit-veteran">' + mdPublic.strings.submit + '</button>';
+          html += '<button type="button" class="button wp-element-button md-prev-step">' + mdPublic.strings.buttonBack + '</button>';
+         html += '<button type="button" class="button button-primary wp-element-button md-submit-veteran">' + mdPublic.strings.buttonSubmit + '</button>';
          html += '</div>';
         html += '</div>';
 
@@ -251,22 +251,22 @@
         militaryEmail = $('#md-militaryEmail').val();
 
         var html = '<div class="md-otp-section">';
-        html += '<h3>Verify Your Military Email</h3>';
-        html += '<p>We\'ll send a verification code to:</p>';
+        html += '<h3>' + mdPublic.strings.step3MilitaryTitle + '</h3>';
+        html += '<p>' + mdPublic.strings.step3MilitaryDesc + '</p>';
         html += '<p><strong>' + escapeHtml(militaryEmail) + '</strong></p>';
          html += '<div class="md-otp-send">';
-         html += '<button type="button" class="button button-primary wp-element-button md-send-otp">' + mdPublic.strings.submit + '</button>';
+         html += '<button type="button" class="button button-primary wp-element-button md-send-otp">' + mdPublic.strings.buttonSubmit + '</button>';
          html += '</div>';
          html += '<div class="md-otp-verify" style="display:none;">';
          html += '<div class="md-otp-sent-message">' + mdPublic.strings.otpSent + '</div>';
          html += '<div class="md-otp-input-wrapper">';
-          html += '<input type="text" class="input-text md-otp-input" maxlength="6" placeholder="000000" pattern="[0-9]*" inputmode="numeric">';
+          html += '<input type="text" class="input-text md-otp-input" maxlength="6" placeholder="' + mdPublic.strings.step3OtpPlaceholder + '" pattern="[0-9]*" inputmode="numeric">';
          html += '</div>';
-         html += '<button type="button" class="button button-primary wp-element-button md-verify-otp">' + mdPublic.strings.verifyCode + '</button>';
-         html += '<p class="md-resend-link"><a href="#" class="md-resend-otp">Resend code</a></p>';
+         html += '<button type="button" class="button button-primary wp-element-button md-verify-otp">' + mdPublic.strings.buttonVerifyCode + '</button>';
+         html += '<p class="md-resend-link"><a href="#" class="md-resend-otp">' + mdPublic.strings.step3ResendLink + '</a></p>';
          html += '</div>';
          html += '<div class="md-form-actions">';
-         html += '<button type="button" class="button wp-element-button md-prev-step">' + mdPublic.strings.back + '</button>';
+          html += '<button type="button" class="button wp-element-button md-prev-step">' + mdPublic.strings.buttonBack + '</button>';
         html += '</div>';
         html += '</div>';
 
@@ -318,7 +318,7 @@
             complete: function () {
                 $btn.prop('disabled', false);
                 if ($btn.is('button')) {
-                    $btn.text(mdPublic.strings.submit);
+                    $btn.text(mdPublic.strings.buttonSubmit);
                 }
             }
         });
@@ -330,7 +330,7 @@
         var otp = $('.md-otp-input').val().trim();
 
         if (!otp || otp.length !== 6) {
-            showMessage('error', 'Please enter a 6-digit code.');
+            showMessage('error', mdPublic.strings.step3OtpValidation);
             return;
         }
 
@@ -358,12 +358,12 @@
                     }
                     
                     showMessage('error', message);
-                    $btn.prop('disabled', false).text(mdPublic.strings.verifyCode);
+                     $btn.prop('disabled', false).text(mdPublic.strings.buttonVerifyCode);
                 }
             },
             error: function () {
                 showMessage('error', mdPublic.strings.errorOccurred);
-                $btn.prop('disabled', false).text(mdPublic.strings.verifyCode);
+                     $btn.prop('disabled', false).text(mdPublic.strings.buttonVerifyCode);
             }
         });
     });
@@ -401,12 +401,12 @@
                     }
                     
                     showMessage('error', message);
-                    $btn.prop('disabled', false).text(mdPublic.strings.submit);
+                     $btn.prop('disabled', false).text(mdPublic.strings.buttonSubmit);
                 }
             },
             error: function () {
                 showMessage('error', mdPublic.strings.errorOccurred);
-                $btn.prop('disabled', false).text(mdPublic.strings.submit);
+                     $btn.prop('disabled', false).text(mdPublic.strings.buttonSubmit);
             }
         });
     });
@@ -451,9 +451,9 @@
         html += '<div class="md-status-content"><h3>' + message + '</h3>';
         
         if (redirectUrl) {
-            html += '<p>Redirecting...</p></div></div>';
+            html += '<p>' + mdPublic.strings.redirecting + '</p></div></div>';
         } else {
-            html += '<p>Refreshing page...</p></div></div>';
+            html += '<p>' + mdPublic.strings.refreshing + '</p></div></div>';
         }
 
         $('.md-form-wrapper').html(html);
@@ -488,9 +488,9 @@
         
         // If the attempts element doesn't exist, create it
         if ($attemptsElement.length === 0) {
-            var typeText = type === 'veteran' ? 'Veteran' : 'Military';
+            var text = type === 'veteran' ? mdPublic.strings.failedVeteranText : mdPublic.strings.failedMilitaryText;
             var html = '<p class="md-failed-' + type + '">' + 
-                typeText + ' verification: ' + failedAttempts.count + '/' + failedAttempts.max + ' failed attempts' + 
+                text.replace('%d/%d', failedAttempts.count + '/' + failedAttempts.max) + 
                 '<span class="md-attempts-bar">' +
                 '<span class="md-attempts-progress-fill" style="width: ' + failedAttempts.progress + '%;"></span>' +
                 '</span>' +
@@ -499,8 +499,8 @@
             $attemptsElement = $attemptsContainer.find(selector);
         } else {
             // Update existing element
-            var typeText = type === 'veteran' ? 'Veteran' : 'Military';
-            var newText = typeText + ' verification: ' + failedAttempts.count + '/' + failedAttempts.max + ' failed attempts';
+            var text = type === 'veteran' ? mdPublic.strings.failedVeteranText : mdPublic.strings.failedMilitaryText;
+            var newText = text.replace('%d/%d', failedAttempts.count + '/' + failedAttempts.max);
             $attemptsElement.contents().first().replaceWith(newText);
             
             // Update progress bar
