@@ -270,6 +270,7 @@ function md_get_form_text_settings() {
 		// Verified Status
 		'verified_veteran_title' => __( 'Veteran Status Verified', 'military-discounts' ),
 		'verified_military_title' => __( 'Active Military Status Verified', 'military-discounts' ),
+		/* translators: %s: expiration date */
 		'verified_valid_until' => __( 'Valid until %s', 'military-discounts' ),
 		'verified_no_expiration' => __( 'No expiration', 'military-discounts' ),
 		'verified_note' => __( 'You are eligible for military discounts on applicable products and coupons.', 'military-discounts' ),
@@ -283,11 +284,14 @@ function md_get_form_text_settings() {
 
 		// Lockout Status
 		'lockout_title' => __( 'Verification Locked', 'military-discounts' ),
-		'lockout_description' => __( 'Too many failed %s verification attempts. Please try again in %d minutes.', 'military-discounts' ),
+		/* translators: 1: verification type, 2: minutes remaining */
+		'lockout_description' => __( 'Too many failed %1$s verification attempts. Please try again in %2$d minutes.', 'military-discounts' ),
 
 		// Failed Attempts
-		'failed_veteran_text' => __( 'Veteran verification: %d/%d failed attempts', 'military-discounts' ),
-		'failed_military_text' => __( 'Military verification: %d/%d failed attempts', 'military-discounts' ),
+		/* translators: 1: current failed attempts, 2: maximum allowed attempts */
+		'failed_veteran_text' => __( 'Veteran verification: %1$d/%2$d failed attempts', 'military-discounts' ),
+		/* translators: 1: current failed attempts, 2: maximum allowed attempts */
+		'failed_military_text' => __( 'Military verification: %1$d/%2$d failed attempts', 'military-discounts' ),
 
 		// Step 1: Type Selection
 		'step1_title' => __( 'Select Verification Type', 'military-discounts' ),

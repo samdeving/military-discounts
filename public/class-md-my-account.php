@@ -291,7 +291,7 @@ class MD_My_Account {
 					</div>
 					<div class="md-status-content">
 						<h3><?php echo esc_html( md_get_form_text_settings()['lockout_title'] ); ?></h3>
-						<p><?php printf( esc_html( md_get_form_text_settings()['lockout_description'] ), $type, $remaining ); ?></p>
+						<p><?php printf( esc_html( md_get_form_text_settings()['lockout_description'] ), esc_html( $type ), absint( $remaining ) ); ?></p>
 					</div>
 				</div>
 				<?php
@@ -312,19 +312,19 @@ class MD_My_Account {
 				<div class="md-failed-attempts">
 					<?php if ( $failed_veteran > 0 ) : ?>
 						<p class="md-failed-veteran">
-							<?php printf( esc_html( $form_text_settings['failed_veteran_text'] ), $failed_veteran, $security_settings['max_failed_veteran_attempts'] ); ?>
+							<?php printf( esc_html( $form_text_settings['failed_veteran_text'] ), absint( $failed_veteran ), absint( $security_settings['max_failed_veteran_attempts'] ) ); ?>
 							<span class="md-attempts-bar">
-								<span class="md-attempts-progress-fill <?php echo ( $failed_veteran >= $security_settings['max_failed_veteran_attempts'] * 0.8 ) ? 'danger' : ( $failed_veteran >= $security_settings['max_failed_veteran_attempts'] * 0.5 ? 'warning' : '' ); ?>" 
-									  style="width: <?php echo ( $failed_veteran / $security_settings['max_failed_veteran_attempts'] ) * 100; ?>%;"></span>
+								<span class="md-attempts-progress-fill <?php echo ( $failed_veteran >= $security_settings['max_failed_veteran_attempts'] * 0.8 ) ? 'danger' : ( $failed_veteran >= $security_settings['max_failed_veteran_attempts'] * 0.5 ? 'warning' : '' ); ?>"
+									  style="width: <?php echo esc_attr( ( $failed_veteran / $security_settings['max_failed_veteran_attempts'] ) * 100 ); ?>%;"></span>
 							</span>
 						</p>
 					<?php endif; ?>
 					<?php if ( $failed_military > 0 ) : ?>
 						<p class="md-failed-military">
-							<?php printf( esc_html( $form_text_settings['failed_military_text'] ), $failed_military, $security_settings['max_failed_military_attempts'] ); ?>
+							<?php printf( esc_html( $form_text_settings['failed_military_text'] ), absint( $failed_military ), absint( $security_settings['max_failed_military_attempts'] ) ); ?>
 							<span class="md-attempts-bar">
-								<span class="md-attempts-progress-fill <?php echo ( $failed_military >= $security_settings['max_failed_military_attempts'] * 0.8 ) ? 'danger' : ( $failed_military >= $security_settings['max_failed_military_attempts'] * 0.5 ? 'warning' : '' ); ?>" 
-									  style="width: <?php echo ( $failed_military / $security_settings['max_failed_military_attempts'] ) * 100; ?>%;"></span>
+								<span class="md-attempts-progress-fill <?php echo ( $failed_military >= $security_settings['max_failed_military_attempts'] * 0.8 ) ? 'danger' : ( $failed_military >= $security_settings['max_failed_military_attempts'] * 0.5 ? 'warning' : '' ); ?>"
+									  style="width: <?php echo esc_attr( ( $failed_military / $security_settings['max_failed_military_attempts'] ) * 100 ); ?>%;"></span>
 							</span>
 						</p>
 					<?php endif; ?>

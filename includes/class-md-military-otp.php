@@ -115,7 +115,13 @@ If you did not request this code, please ignore this email.
 		// Check lockout status
 		if ( $security_settings['enable_lockout'] && md_is_locked_out( $user_id, 'military' ) ) {
 			$remaining = md_get_lockout_remaining( $user_id, 'military' );
-			throw new Exception( sprintf( esc_html__( 'Too many failed verification attempts. Please try again in %d minutes.', 'military-discounts' ), $remaining ) );
+			throw new Exception(
+				sprintf(
+					/* translators: %d: minutes remaining */
+					esc_html__( 'Too many failed verification attempts. Please try again in %d minutes.', 'military-discounts' ),
+					absint( $remaining )
+				)
+			);
 		}
 
 		$stored_otp = get_transient( 'md_otp_' . $user_id );

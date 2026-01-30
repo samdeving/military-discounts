@@ -13,20 +13,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<p><?php printf( esc_html__( 'Hi %s,', 'military-discounts' ), esc_html( $user->display_name ) ); ?></p>
+<p><?php
+	/* translators: %s: user display name */
+	printf( esc_html__( 'Hi %s,', 'military-discounts' ), esc_html( $user->display_name ) );
+?></p>
 
-<p><?php 
+<p><?php
 	$type_label = 'veteran' === $verification_type ? __( 'veteran', 'military-discounts' ) : __( 'active military', 'military-discounts' );
 	printf(
+		/* translators: %s: verification type (veteran or active military) */
 		esc_html__( 'Your %s verification has been temporarily locked due to too many failed attempts.', 'military-discounts' ),
-		$type_label
+		esc_html( $type_label )
 	);
 ?></p>
 
-<p><?php 
+<p><?php
 	printf(
+		/* translators: %d: lockout duration in minutes */
 		esc_html__( 'The lockout will expire in %d minutes. Please try again after this time period.', 'military-discounts' ),
-		$lockout_duration
+		absint( $lockout_duration )
 	);
 ?></p>
 
