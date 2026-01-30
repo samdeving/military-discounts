@@ -532,7 +532,7 @@ class MD_Admin {
 					<span class="description">
 						<?php
 						printf(
-							/* translators: %s: date */
+							/* translators: %s: submission date and time */
 							esc_html__( 'Submitted: %s', 'military-discounts' ),
 							esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $pending_item['created_at'] ) )
 						);
@@ -548,10 +548,23 @@ class MD_Admin {
 					<?php if ( $failed_veteran > 0 ) : ?>
 						<p>
 							<strong><?php esc_html_e( 'Veteran:', 'military-discounts' ); ?></strong> 
-							<?php printf( esc_html__( '%d/%d failed attempts', 'military-discounts' ), $failed_veteran, $security_settings['max_failed_veteran_attempts'] ); ?>
+							<?php
+						printf(
+							/* translators: 1: current failed attempts, 2: maximum allowed attempts */
+							esc_html__( '%1$d/%2$d failed attempts', 'military-discounts' ),
+							esc_html( $failed_veteran ),
+							esc_html( $security_settings['max_failed_veteran_attempts'] )
+						);
+						?>
 							<?php if ( $veteran_lockout > 0 ) : ?>
 								<span class="md-status-badge md-status-locked">
-									<?php printf( esc_html__( 'Locked for %d min', 'military-discounts' ), $veteran_lockout ); ?>
+									<?php
+									printf(
+										/* translators: %d: lockout time remaining in minutes */
+										esc_html__( 'Locked for %d min', 'military-discounts' ),
+										esc_html( $veteran_lockout )
+									);
+									?>
 								</span>
 							<?php endif; ?>
 						</p>
@@ -559,10 +572,23 @@ class MD_Admin {
 					<?php if ( $failed_military > 0 ) : ?>
 						<p>
 							<strong><?php esc_html_e( 'Military:', 'military-discounts' ); ?></strong> 
-							<?php printf( esc_html__( '%d/%d failed attempts', 'military-discounts' ), $failed_military, $security_settings['max_failed_military_attempts'] ); ?>
+							<?php
+						printf(
+							/* translators: 1: current failed attempts, 2: maximum allowed attempts */
+							esc_html__( '%1$d/%2$d failed attempts', 'military-discounts' ),
+							esc_html( $failed_military ),
+							esc_html( $security_settings['max_failed_military_attempts'] )
+						);
+						?>
 							<?php if ( $military_lockout > 0 ) : ?>
 								<span class="md-status-badge md-status-locked">
-									<?php printf( esc_html__( 'Locked for %d min', 'military-discounts' ), $military_lockout ); ?>
+									<?php
+									printf(
+										/* translators: %d: lockout time remaining in minutes */
+										esc_html__( 'Locked for %d min', 'military-discounts' ),
+										esc_html( $military_lockout )
+									);
+									?>
 								</span>
 							<?php endif; ?>
 						</p>

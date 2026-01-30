@@ -130,6 +130,7 @@ class MD_Settings {
 				'option'      => 'md_settings_form_text',
 				'field'       => 'verified_valid_until',
 				'description' => __( 'Text for "Valid until" date display.', 'military-discounts' ),
+				/* translators: %s: Expiration date */
 				'default'     => __( 'Valid until %s', 'military-discounts' ),
 			)
 		);
@@ -257,8 +258,10 @@ class MD_Settings {
 			array(
 				'option'      => 'md_settings_form_text',
 				'field'       => 'lockout_description',
-				'description' => __( 'Description text for locked out status. Use %s for verification type and %d for minutes.', 'military-discounts' ),
-				'default'     => __( 'Too many failed %s verification attempts. Please try again in %d minutes.', 'military-discounts' ),
+				/* translators: %1$s: Verification type, %2$d: Minutes until retry */
+				'description' => __( 'Description text for locked out status. Use %1$s for verification type and %2$d for minutes.', 'military-discounts' ),
+				/* translators: %1$s: Verification type, %2$d: Minutes until retry */
+				'default'     => __( 'Too many failed %1$s verification attempts. Please try again in %2$d minutes.', 'military-discounts' ),
 			)
 		);
 
@@ -272,8 +275,10 @@ class MD_Settings {
 			array(
 				'option'      => 'md_settings_form_text',
 				'field'       => 'failed_veteran_text',
-				'description' => __( 'Text for veteran failed attempts. Use %d for count and max.', 'military-discounts' ),
-				'default'     => __( 'Veteran verification: %d/%d failed attempts', 'military-discounts' ),
+				/* translators: %1$d: Current failed attempts, %2$d: Maximum allowed attempts */
+				'description' => __( 'Text for veteran failed attempts. Use %1$d for count and %2$d for max.', 'military-discounts' ),
+				/* translators: %1$d: Current failed attempts, %2$d: Maximum allowed attempts */
+				'default'     => __( 'Veteran verification: %1$d/%2$d failed attempts', 'military-discounts' ),
 			)
 		);
 
@@ -286,8 +291,10 @@ class MD_Settings {
 			array(
 				'option'      => 'md_settings_form_text',
 				'field'       => 'failed_military_text',
-				'description' => __( 'Text for military failed attempts. Use %d for count and max.', 'military-discounts' ),
-				'default'     => __( 'Military verification: %d/%d failed attempts', 'military-discounts' ),
+				/* translators: %1$d: Current failed attempts, %2$d: Maximum allowed attempts */
+				'description' => __( 'Text for military failed attempts. Use %1$d for count and %2$d for max.', 'military-discounts' ),
+				/* translators: %1$d: Current failed attempts, %2$d: Maximum allowed attempts */
+				'default'     => __( 'Military verification: %1$d/%2$d failed attempts', 'military-discounts' ),
 			)
 		);
 
@@ -1440,7 +1447,10 @@ class MD_Settings {
 		// Verified Status
 		$sanitized['verified_veteran_title'] = isset( $input['verified_veteran_title'] ) ? sanitize_text_field( $input['verified_veteran_title'] ) : __( 'Veteran Status Verified', 'military-discounts' );
 		$sanitized['verified_military_title'] = isset( $input['verified_military_title'] ) ? sanitize_text_field( $input['verified_military_title'] ) : __( 'Active Military Status Verified', 'military-discounts' );
-		$sanitized['verified_valid_until'] = isset( $input['verified_valid_until'] ) ? sanitize_text_field( $input['verified_valid_until'] ) : __( 'Valid until %s', 'military-discounts' );
+		$sanitized['verified_valid_until'] = isset( $input['verified_valid_until'] ) ? sanitize_text_field( $input['verified_valid_until'] ) : (
+			/* translators: %s: Expiration date */
+			__( 'Valid until %s', 'military-discounts' )
+			);
 		$sanitized['verified_no_expiration'] = isset( $input['verified_no_expiration'] ) ? sanitize_text_field( $input['verified_no_expiration'] ) : __( 'No expiration', 'military-discounts' );
 		$sanitized['verified_note'] = isset( $input['verified_note'] ) ? sanitize_text_field( $input['verified_note'] ) : __( 'You are eligible for military discounts on applicable products and coupons.', 'military-discounts' );
 
@@ -1453,11 +1463,20 @@ class MD_Settings {
 
 		// Lockout Status
 		$sanitized['lockout_title'] = isset( $input['lockout_title'] ) ? sanitize_text_field( $input['lockout_title'] ) : __( 'Verification Locked', 'military-discounts' );
-		$sanitized['lockout_description'] = isset( $input['lockout_description'] ) ? sanitize_text_field( $input['lockout_description'] ) : __( 'Too many failed %s verification attempts. Please try again in %d minutes.', 'military-discounts' );
+		$sanitized['lockout_description'] = isset( $input['lockout_description'] ) ? sanitize_text_field( $input['lockout_description'] ) : (
+			/* translators: %1$s: Verification type, %2$d: Minutes until retry */
+			__( 'Too many failed %1$s verification attempts. Please try again in %2$d minutes.', 'military-discounts' )
+		);
 
 		// Failed Attempts
-		$sanitized['failed_veteran_text'] = isset( $input['failed_veteran_text'] ) ? sanitize_text_field( $input['failed_veteran_text'] ) : __( 'Veteran verification: %d/%d failed attempts', 'military-discounts' );
-		$sanitized['failed_military_text'] = isset( $input['failed_military_text'] ) ? sanitize_text_field( $input['failed_military_text'] ) : __( 'Military verification: %d/%d failed attempts', 'military-discounts' );
+		$sanitized['failed_veteran_text'] = isset( $input['failed_veteran_text'] ) ? sanitize_text_field( $input['failed_veteran_text'] ) : (
+			/* translators: %1$d: Current failed attempts, %2$d: Maximum allowed attempts */
+			__( 'Veteran verification: %1$d/%2$d failed attempts', 'military-discounts' )
+		);
+		$sanitized['failed_military_text'] = isset( $input['failed_military_text'] ) ? sanitize_text_field( $input['failed_military_text'] ) : (
+			/* translators: %1$d: Current failed attempts, %2$d: Maximum allowed attempts */
+			__( 'Military verification: %1$d/%2$d failed attempts', 'military-discounts' )
+		);
 
 		// Step 1: Type Selection
 		$sanitized['step1_title'] = isset( $input['step1_title'] ) ? sanitize_text_field( $input['step1_title'] ) : __( 'Select Verification Type', 'military-discounts' );
@@ -1773,6 +1792,7 @@ class MD_Settings {
 		$cancelled_count = $queue->cancel_all_pending_verifications();
 
 		wp_send_json_success( array(
+			/* translators: %d: Number of cancelled verifications */
 			'message' => sprintf( __( 'Cancelled %d pending verifications.', 'military-discounts' ), $cancelled_count ),
 			'count' => $cancelled_count
 		) );
