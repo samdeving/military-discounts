@@ -1183,6 +1183,77 @@ class MD_Settings {
 				'default'     => true,
 			)
 		);
+
+		// Denial Reason Customization
+		add_settings_field(
+			'denial_reason_person_not_found',
+			__( 'Person Not Found Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-va-api',
+			'md_va_api_section',
+			array(
+				'option'      => 'md_settings_va_api',
+				'field'       => 'denial_reason_person_not_found',
+				'description' => __( 'Message for "Person not found" denial reason.', 'military-discounts' ),
+				'default'     => __( 'Person not found in VA records.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'denial_reason_not_title_38',
+			__( 'Not Title 38 Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-va-api',
+			'md_va_api_section',
+			array(
+				'option'      => 'md_settings_va_api',
+				'field'       => 'denial_reason_not_title_38',
+				'description' => __( 'Message for "No Title 38 veteran status" denial reason.', 'military-discounts' ),
+				'default'     => __( 'No Title 38 veteran status found.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'denial_reason_more_research',
+			__( 'More Research Required Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-va-api',
+			'md_va_api_section',
+			array(
+				'option'      => 'md_settings_va_api',
+				'field'       => 'denial_reason_more_research',
+				'description' => __( 'Message for "Additional research required" denial reason.', 'military-discounts' ),
+				'default'     => __( 'Additional research is required.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'denial_reason_error',
+			__( 'System Error Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-va-api',
+			'md_va_api_section',
+			array(
+				'option'      => 'md_settings_va_api',
+				'field'       => 'denial_reason_error',
+				'description' => __( 'Message for "System error" denial reason.', 'military-discounts' ),
+				'default'     => __( 'A system error occurred.', 'military-discounts' ),
+			)
+		);
+
+		add_settings_field(
+			'denial_reason_max_retries',
+			__( 'Max Retries Exceeded Message', 'military-discounts' ),
+			array( $this, 'render_text_field' ),
+			'md-settings-va-api',
+			'md_va_api_section',
+			array(
+				'option'      => 'md_settings_va_api',
+				'field'       => 'denial_reason_max_retries',
+				'description' => __( 'Message for "Maximum verification attempts exceeded" denial reason.', 'military-discounts' ),
+				'default'     => __( 'Maximum verification attempts exceeded.', 'military-discounts' ),
+			)
+		);
 	}
 
 	/**
@@ -1669,6 +1740,13 @@ class MD_Settings {
 		$sanitized['api_key'] = isset( $input['api_key'] ) ? sanitize_text_field( $input['api_key'] ) : '';
 		$sanitized['api_url'] = isset( $input['api_url'] ) ? esc_url_raw( $input['api_url'] ) : '';
 		$sanitized['sandbox'] = ! empty( $input['sandbox'] );
+
+		// Sanitize denial reason messages
+		$sanitized['denial_reason_person_not_found'] = isset( $input['denial_reason_person_not_found'] ) ? sanitize_text_field( $input['denial_reason_person_not_found'] ) : __( 'Person not found in VA records.', 'military-discounts' );
+		$sanitized['denial_reason_not_title_38'] = isset( $input['denial_reason_not_title_38'] ) ? sanitize_text_field( $input['denial_reason_not_title_38'] ) : __( 'No Title 38 veteran status found.', 'military-discounts' );
+		$sanitized['denial_reason_more_research'] = isset( $input['denial_reason_more_research'] ) ? sanitize_text_field( $input['denial_reason_more_research'] ) : __( 'Additional research is required.', 'military-discounts' );
+		$sanitized['denial_reason_error'] = isset( $input['denial_reason_error'] ) ? sanitize_text_field( $input['denial_reason_error'] ) : __( 'A system error occurred.', 'military-discounts' );
+		$sanitized['denial_reason_max_retries'] = isset( $input['denial_reason_max_retries'] ) ? sanitize_text_field( $input['denial_reason_max_retries'] ) : __( 'Maximum verification attempts exceeded.', 'military-discounts' );
 
 		return $sanitized;
 	}

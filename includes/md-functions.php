@@ -183,6 +183,11 @@ function md_get_va_api_settings() {
 		'api_key'     => '',
 		'api_url'     => '', // Empty by default to let get_api_url() handle it
 		'sandbox'     => true,
+		'denial_reason_person_not_found' => __( 'Person not found in VA records.', 'military-discounts' ),
+		'denial_reason_not_title_38' => __( 'No Title 38 veteran status found.', 'military-discounts' ),
+		'denial_reason_more_research' => __( 'Additional research is required.', 'military-discounts' ),
+		'denial_reason_error' => __( 'A system error occurred.', 'military-discounts' ),
+		'denial_reason_max_retries' => __( 'Maximum verification attempts exceeded.', 'military-discounts' ),
 	);
 
 	return wp_parse_args( get_option( 'md_settings_va_api', array() ), $defaults );

@@ -267,12 +267,14 @@ class MD_VA_API {
 	 * @return string Human-readable reason.
 	 */
 	public static function get_denial_reason( $reason ) {
+		$settings = md_get_va_api_settings();
+		
 		$reasons = array(
-			'PERSON_NOT_FOUND'      => __( 'Person not found in VA records.', 'military-discounts' ),
-			'NOT_TITLE_38'          => __( 'No Title 38 veteran status found.', 'military-discounts' ),
-			'MORE_RESEARCH_REQUIRED' => __( 'Additional research is required.', 'military-discounts' ),
-			'ERROR'                 => __( 'A system error occurred.', 'military-discounts' ),
-			'MAX_RETRIES_EXCEEDED'  => __( 'Maximum verification attempts exceeded.', 'military-discounts' ),
+			'PERSON_NOT_FOUND'      => $settings['denial_reason_person_not_found'],
+			'NOT_TITLE_38'          => $settings['denial_reason_not_title_38'],
+			'MORE_RESEARCH_REQUIRED' => $settings['denial_reason_more_research'],
+			'ERROR'                 => $settings['denial_reason_error'],
+			'MAX_RETRIES_EXCEEDED'  => $settings['denial_reason_max_retries'],
 		);
 
 		return isset( $reasons[ $reason ] ) ? $reasons[ $reason ] : $reason;
