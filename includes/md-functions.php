@@ -167,6 +167,7 @@ function md_get_general_settings() {
 		'redirect_delay'             => 2000,
 		'page_title'                 => '',
 		'menu_order'                 => 10,
+		'autoscroll_to_messages'     => true,
 	);
 
 	return wp_parse_args( get_option( 'md_settings_general', array() ), $defaults );

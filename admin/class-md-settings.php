@@ -1107,6 +1107,21 @@ class MD_Settings {
 				'max'         => 100,
 			)
 		);
+
+		add_settings_field(
+			'autoscroll_to_messages',
+			__( 'Auto-scroll to Messages', 'military-discounts' ),
+			array( $this, 'render_checkbox_field' ),
+			'md-settings-general',
+			'md_general_section',
+			array(
+				'option'      => 'md_settings_general',
+				'field'       => 'autoscroll_to_messages',
+				'label'       => __( 'Automatically scroll to return messages after form submission', 'military-discounts' ),
+				'description' => __( 'When enabled, the page will automatically scroll to the top of the form to show success or error messages after submission.', 'military-discounts' ),
+				'default'     => true,
+			)
+		);
 	}
 
 	/**
@@ -1729,6 +1744,7 @@ class MD_Settings {
 		$sanitized['redirect_delay']          = isset( $input['redirect_delay'] ) ? max( 0, absint( $input['redirect_delay'] ) ) : 2000;
 		$sanitized['page_title']              = isset( $input['page_title'] ) ? sanitize_text_field( $input['page_title'] ) : '';
 		$sanitized['menu_order']              = isset( $input['menu_order'] ) ? min( 100, max( 0, absint( $input['menu_order'] ) ) ) : 10;
+		$sanitized['autoscroll_to_messages']  = ! empty( $input['autoscroll_to_messages'] );
 
 		return $sanitized;
 	}

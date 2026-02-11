@@ -436,9 +436,12 @@
         var $msg = $('#md-messages');
         $msg.removeClass('success error info').addClass(type).html(message).show();
 
-        $('html, body').animate({
-            scrollTop: $msg.offset().top - 100
-        }, 300);
+        // Auto-scroll to messages only if setting is enabled
+        if (mdPublic.autoscrollToMessages) {
+            $('html, body').animate({
+                scrollTop: $msg.offset().top - 100
+            }, 300);
+        }
     }
 
     function hideMessage() {

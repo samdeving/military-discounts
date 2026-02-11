@@ -118,12 +118,15 @@ class MD_Public {
 
 		$form_text_settings = md_get_form_text_settings();
 
+		$general_settings = md_get_general_settings();
+
 		wp_localize_script(
 			'md-public',
 			'mdPublic',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'md_public_nonce' ),
+				'autoscrollToMessages' => ! empty( $general_settings['autoscroll_to_messages'] ),
 				'strings' => array(
 					// Page Header
 					'pageSubtitle' => $form_text_settings['page_subtitle'],
