@@ -20,6 +20,8 @@ $options_to_delete = array(
 	'md_settings_military_otp',
 	'md_settings_queue',
 	'md_settings_logs',
+	'md_settings_security',
+	'md_settings_form_text',
 	'md_form_fields_veteran',
 	'md_form_fields_military',
 	'md_pending_verification_index',
@@ -41,6 +43,12 @@ $user_meta_keys = array(
 	'_md_veteran_verified_at',
 	'_md_military_verified_at',
 	'_md_pending_verification',
+	'_md_failed_veteran_attempts',
+	'_md_failed_military_attempts',
+	'_md_last_veteran_attempt_at',
+	'_md_last_military_attempt_at',
+	'_md_veteran_lockout_until',
+	'_md_military_lockout_until',
 );
 
 foreach ( $user_meta_keys as $meta_key ) {
@@ -67,6 +75,3 @@ $wpdb->query(
 		'_transient_timeout_md_otp_%'
 	)
 );
-
-// Flush rewrite rules.
-flush_rewrite_rules();
