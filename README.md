@@ -14,7 +14,7 @@ WooCommerce plugin that verifies US military and veterans status using VA Lighth
 
 This plugin is in beta, and should not be used in production at this time. Use at your own risk.
 
-This is a WordPress WooCommerce plugin that verifies customers who are currently serving in the US military or are veterans. Veteran verification is done via the **U.S. Department of Veterans Affairs (VA) Lighthouse API**, and active-duty military verification is performed by sending a one-time passcode (OTP) to their official military email address. Once verified, you can automatically issue customers a discount coupon through WooCommerce.
+This is a WordPress WooCommerce plugin that automatically verifies customers who are currently serving in the U.S. military or are veterans, completely free of charge, to offer them discounts. Veteran verification is done via the U.S. Department of Veterans Affairs (VA) Lighthouse API, while active-duty military verification is performed by sending a one-time passcode (OTP) to their official military email address. Once verified, discounts are automatically applied to their purchases through WooCommerce.
 
 == Features ==
 
