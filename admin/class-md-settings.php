@@ -1327,8 +1327,8 @@ class MD_Settings {
 			array(
 				'option'      => 'md_settings_military_otp',
 				'field'       => 'blacklist_patterns',
-				'description' => __( 'Comma-separated patterns to block. Example: *ctr.mil,*civ.mil', 'military-discounts' ),
-				'default'     => '*ctr.mil,*civ.mil',
+				'description' => __( 'Comma-separated patterns. A bare word (e.g. civ, ctr) matches any domain that contains the fragment. Use * as a wildcard anchored to start/end (e.g. *civ.mil). Existing values:', 'military-discounts' ),
+				'default'     => 'civ,ctr',
 			)
 		);
 

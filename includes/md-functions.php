@@ -203,7 +203,7 @@ function md_get_military_otp_settings() {
 	$defaults = array(
 		'enabled'                 => true,
 		'whitelist_patterns'      => '*.mil',
-		'blacklist_patterns'      => '*ctr.mil,*civ.mil',
+		'blacklist_patterns'      => 'civ,ctr',
 		'otp_expiry'              => 15,
 		'require_name_match'      => 'none', // Deprecated, use name_match_type instead
 		'name_match_type'         => 'none', // New setting name
