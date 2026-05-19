@@ -222,31 +222,57 @@ If you did not request this code, please ignore this email.
 	}
 
 	/**
-	 * Check if a string (email domain) matches a wildcard pattern.
+	 * Check if a string — either a full email address or a domain fragment —
+	 * matches a wildcard or substring pattern.
 	 *
-	 * @param string $value   The string to test (for 'is_military_email' this is
-	 *                        the domain portion only, i.e. everything after '@').
-	 * @param string $pattern Wildcard pattern.  '*' matches any sequence of
-	 *                        characters; '?' matches exactly one character.
+	 * Two modes are supported:
+	 *
+	 * 1. Glob mode (pattern contains an asterisk): the asterisk is
+	 *    converted to a PCRE 'any sequence' token and the entire string
+	 *    must match from start to end — identical to the original
+	 *    behaviour for entries such as '*.mil' or '*civ.mil'.
+	 *
+	 * 2. Substring mode (pattern contains no asterisk): the pattern is
+	 *    treated as a literal substring and is wrapped with 'match any
+	 *    sequence' tokens on both ends, expressed as a PCRE alternation
+	 *    suffix match so that 'civ' flags domains such as 'civ.mil',
+	 *    'sub.civ.mil', and 'civcontractor.civ.mil'.
+	 *
+	 * @param string $value   String to test (domain only, after the fix to
+	 *                        is_military_email()).
+	 * @param string $pattern Wildcard or substring pattern.
 	 * @return bool True if matches.
 	 */
 	private function email_matches_pattern( $value, $pattern ) {
-		// Convert wildcard pattern to regex: '*' → '.*',  '?' → '.'
+		// Convert wildcard pattern to regex in two steps.
 		$escaped = preg_quote( $pattern, '/' );
 
 		/**
-		 * Map the escaped wildcard characters to their regex equivalents.
-		 *
 		 * preg_quote() turns '*' into '\*' and '?' into '\?'.  Both are
 		 * backslash-escaped literals at this point and are therefore safe
 		 * to replace without risk of interfering with other escaped
 		 * characters in the pattern.
 		 */
-		$regex = '/^' . str_replace(
-			array( '\*', '\?' ),
-			array( '.*', '.' ),
-			$escaped
-		) . '$/i';
+		if ( false !== strpos( $escaped, '\*' ) ) {
+			// --- Glob mode: pattern has an explicit '*' wildcard ----------
+			// '*' → '.*'  (match any sequence, including none)
+			// '?' → '.'   (match exactly one character)
+			$regex = '/^' . str_replace(
+				array( '\*', '\?' ),
+				array( '.*', '.' ),
+				$escaped
+			) . '$/i';
+		} else {
+			// --- Substring mode: no '*' in the pattern ------------------
+			// Treat the whole escaped string as a literal substring.
+			// '?' → '.' (single-char wildcard still honoured even in
+			// substring mode so admins can type e.g. 'c?v' if desired)
+			$regex = '/.*' . str_replace(
+				array( '\?' ),
+				array( '.' ),
+				$escaped
+			) . '.*/i';
+		}
 
 		return (bool) preg_match( $regex, $value );
 	}
