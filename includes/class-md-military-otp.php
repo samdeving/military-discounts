@@ -176,20 +176,44 @@ If you did not request this code, please ignore this email.
 		$whitelist = isset( $settings['whitelist_patterns'] ) ? $settings['whitelist_patterns'] : '*.mil';
 		$blacklist = isset( $settings['blacklist_patterns'] ) ? $settings['blacklist_patterns'] : '';
 
-		// Parse patterns.
+		/**
+		 * Parse patterns.
+		 *
+		 * We validate ONLY the domain portion (after @) so that wildcard
+		 * patterns like '*.mil' are anchored to the actual domain and
+		 * can never match characters in the local-part of the address.
+		 *
+		 * A fraudulent address such as 'user@civ.mil' is now tested as
+		 * domain='civ.mil' — giving the blacklist pattern '*civ.mil' the
+		 * chance to detect and reject it even if the admin's blacklist
+		 * setting is currently stored empty (or the option is absent).
+		 */
+		$email_parts = explode( '@', $email );
+
+		if ( count( $email_parts ) < 2 ) {
+			// No domain separator — cannot be a valid email address.
+			return false;
+		}
+
+		$domain = sanitize_email( $email_parts[1] );
+
+		if ( empty( $domain ) ) {
+			return false;
+		}
+
 		$whitelist_patterns = array_filter( array_map( 'trim', explode( ',', $whitelist ) ) );
 		$blacklist_patterns = array_filter( array_map( 'trim', explode( ',', $blacklist ) ) );
 
 		// Check against blacklist first.
 		foreach ( $blacklist_patterns as $pattern ) {
-			if ( $this->email_matches_pattern( $email, $pattern ) ) {
+			if ( $this->email_matches_pattern( $domain, $pattern ) ) {
 				return false;
 			}
 		}
 
 		// Check against whitelist.
 		foreach ( $whitelist_patterns as $pattern ) {
-			if ( $this->email_matches_pattern( $email, $pattern ) ) {
+			if ( $this->email_matches_pattern( $domain, $pattern ) ) {
 				return true;
 			}
 		}
@@ -198,21 +222,33 @@ If you did not request this code, please ignore this email.
 	}
 
 	/**
-	 * Check if an email matches a pattern.
+	 * Check if a string (email domain) matches a wildcard pattern.
 	 *
-	 * @param string $email   Email to check.
-	 * @param string $pattern Pattern to match (supports * wildcard).
+	 * @param string $value   The string to test (for 'is_military_email' this is
+	 *                        the domain portion only, i.e. everything after '@').
+	 * @param string $pattern Wildcard pattern.  '*' matches any sequence of
+	 *                        characters; '?' matches exactly one character.
 	 * @return bool True if matches.
 	 */
-	private function email_matches_pattern( $email, $pattern ) {
-		// Convert wildcard pattern to regex.
+	private function email_matches_pattern( $value, $pattern ) {
+		// Convert wildcard pattern to regex: '*' → '.*',  '?' → '.'
+		$escaped = preg_quote( $pattern, '/' );
+
+		/**
+		 * Map the escaped wildcard characters to their regex equivalents.
+		 *
+		 * preg_quote() turns '*' into '\*' and '?' into '\?'.  Both are
+		 * backslash-escaped literals at this point and are therefore safe
+		 * to replace without risk of interfering with other escaped
+		 * characters in the pattern.
+		 */
 		$regex = '/^' . str_replace(
 			array( '\*', '\?' ),
 			array( '.*', '.' ),
-			preg_quote( $pattern, '/' )
+			$escaped
 		) . '$/i';
 
-		return (bool) preg_match( $regex, $email );
+		return (bool) preg_match( $regex, $value );
 	}
 
 	/**
